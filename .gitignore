@@ -1,0 +1,40 @@
+# Virtual Environments (Python)
+.venv/
+venv/
+env/
+
+# Python Cache and Compiled Files
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.poetry/
+
+# Environment Variables (Security)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Frontend Node / React
+node_modules/
+dist/
+dist-ssr/
+.eslintcache
+.yarn-clean
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS Files
+.DS_Store
+Thumbs.db
