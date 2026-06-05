@@ -19,7 +19,7 @@ The application helps users answer two main focus questions:
 
 This project is structured as a monorepo containing isolated modules:
 
-- **/scripts**: Contains the data ingestion backend (Python, virtual environment, and ETL scripts).
+- **/scripts**: Contains Python ETL pipelines organized by shared core utilities, extractors, transformers, loaders, pipelines, and database models.
 - **/frontend**: Reserved for the web-based visualization frontend application (dashboard).
 - **/docs**: Contains documentation schemas, specifications, and guidelines.
 
@@ -85,7 +85,24 @@ When merging these sources, agents must implement the following data quality rul
 
 ---
 
-## 6. KPI Thresholds & Update Frequencies
+## 6. Testing Guidelines
+
+Testing is defined per monorepo module.
+
+### `/scripts`
+
+- Use `pytest`.
+- Run tests from inside `/scripts` with `python -m pytest tests`.
+- Keep script tests inside `/scripts/tests`.
+- Unit tests must not call live APIs or production databases.
+- Use `tests/conftest.py` for shared pytest fixtures.
+- Use `tests/helpers.py` for small reusable factories and utilities.
+- Loader tests may use SQLite in-memory databases when validating persistence behavior.
+- Pipeline tests should mock extractors, transformers, and loaders to validate orchestration behavior.
+
+---
+
+## 7. KPI Thresholds & Update Frequencies
 
 ### Specific KPI Meta Targets
 
