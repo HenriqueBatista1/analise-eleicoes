@@ -51,3 +51,11 @@ Com o ambiente virtual ativo e dentro da pasta `scripts`, execute:
 ```bash
 python main.py
 ```
+
+### Executando os Testes dos Scripts
+
+Com o ambiente virtual ativo e dentro da pasta `scripts`, execute:
+
+```bash
+python -m pytest tests
+```
