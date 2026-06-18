@@ -38,3 +38,7 @@ dist-ssr/
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Ignorar arquivos de dados (ETL)
+data/raw/*.csv
+data/raw/*.zip
