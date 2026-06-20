@@ -68,6 +68,7 @@ This project is structured as a monorepo containing isolated modules:
 When merging these sources, agents must implement the following data quality rules:
 
 - **Name Standardization**: Normalize candidate names across different sources (e.g., aligning "Luiz Inácio Lula da Silva" vs "Lula" into a unified ID).
+- **Candidate Catalog**: ETL pipelines should register observed source candidates in the candidate catalog when persisting candidate-based facts.
 - **Temporal Alignment**: Resample daily/high-frequency series (like Polymarket) to a **weekly granularity** when comparing with lower-frequency public interest data (Google Trends).
 - **Date Formats**: Enforce standard ISO `YYYY-MM-DD` formatting across all databases and datasets.
 - **Data Types**: Ensure numerical metrics (like TSE vote counts stored as text strings) are parsed into integer or float columns during ingestion.
