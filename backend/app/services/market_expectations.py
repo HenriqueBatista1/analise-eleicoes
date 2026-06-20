@@ -1,9 +1,12 @@
 from collections import OrderedDict
+from datetime import datetime
 
-from sqlalchemy.orm import Session
+from sqlalchemy import Integer, extract, func
+from sqlalchemy.orm import Query, Session
 
 from app.models import PolymarketProbability
 from app.schemas.market_expectations import (
+    MarketExpectationInterval,
     MarketExpectationLargestChange,
     MarketExpectationLeader,
     MarketExpectationLeaderMargin,
@@ -15,25 +18,132 @@ from app.schemas.market_expectations import (
 )
 
 
-def get_market_expectations(db: Session) -> MarketExpectationsResponse:
-    records = (
-        db.query(PolymarketProbability)
-        .join(PolymarketProbability.candidate_catalog)
-        .order_by(
-            PolymarketProbability.candidate_catalog_id.asc(),
-            PolymarketProbability.market_id.asc(),
-            PolymarketProbability.timestamp.asc(),
-        )
-        .all()
+SUPPORTED_MARKET_EXPECTATION_INTERVALS: set[MarketExpectationInterval] = {
+    "1h",
+    "4h",
+    "1d",
+    "1w",
+}
+
+
+def get_market_expectations(
+    db: Session,
+    *,
+    from_date: datetime | None = None,
+    to_date: datetime | None = None,
+    interval: MarketExpectationInterval = "1h",
+    candidate_catalog_ids: list[int] | None = None,
+) -> MarketExpectationsResponse:
+    query = _build_market_expectations_query(
+        db,
+        from_date=from_date,
+        to_date=to_date,
+        interval=interval,
+        candidate_catalog_ids=candidate_catalog_ids,
     )
+    records = query.all()
     series = build_market_expectation_series(records)
 
     return MarketExpectationsResponse(
         sources=["polymarket"],
-        metadata=build_market_expectations_metadata(series),
+        metadata=build_market_expectations_metadata(db),
         summary=build_market_expectations_summary(series),
         series=series,
     )
+
+
+def _build_market_expectations_query(
+    db: Session,
+    *,
+    from_date: datetime | None,
+    to_date: datetime | None,
+    interval: MarketExpectationInterval,
+    candidate_catalog_ids: list[int] | None,
+) -> Query:
+    if interval not in SUPPORTED_MARKET_EXPECTATION_INTERVALS:
+        raise ValueError(f"Unsupported market expectation interval: {interval}")
+
+    query = db.query(PolymarketProbability).join(PolymarketProbability.candidate_catalog)
+    query = _apply_market_expectation_filters(
+        query,
+        from_date=from_date,
+        to_date=to_date,
+        candidate_catalog_ids=candidate_catalog_ids,
+    )
+
+    if interval != "1h":
+        query = _apply_market_expectation_resampling(query, db, interval)
+
+    return query.order_by(
+        PolymarketProbability.candidate_catalog_id.asc(),
+        PolymarketProbability.market_id.asc(),
+        PolymarketProbability.timestamp.asc(),
+    )
+
+
+def _apply_market_expectation_filters(
+    query: Query,
+    *,
+    from_date: datetime | None,
+    to_date: datetime | None,
+    candidate_catalog_ids: list[int] | None,
+) -> Query:
+    if from_date:
+        query = query.filter(PolymarketProbability.timestamp >= from_date)
+
+    if to_date:
+        query = query.filter(PolymarketProbability.timestamp <= to_date)
+
+    if candidate_catalog_ids:
+        query = query.filter(
+            PolymarketProbability.candidate_catalog_id.in_(candidate_catalog_ids)
+        )
+
+    return query
+
+
+def _apply_market_expectation_resampling(
+    query: Query,
+    db: Session,
+    interval: MarketExpectationInterval,
+) -> Query:
+    bucket = _get_market_expectation_bucket_expression(interval)
+    row_number = func.row_number().over(
+        partition_by=[
+            PolymarketProbability.candidate_catalog_id,
+            PolymarketProbability.market_id,
+            bucket,
+        ],
+        order_by=PolymarketProbability.timestamp.desc(),
+    )
+    latest_records_by_bucket = query.with_entities(
+        PolymarketProbability.id.label("probability_id"),
+        row_number.label("row_number"),
+    ).subquery()
+
+    return (
+        db.query(PolymarketProbability)
+        .join(
+            latest_records_by_bucket,
+            PolymarketProbability.id == latest_records_by_bucket.c.probability_id,
+        )
+        .join(PolymarketProbability.candidate_catalog)
+        .filter(latest_records_by_bucket.c.row_number == 1)
+    )
+
+
+def _get_market_expectation_bucket_expression(interval: MarketExpectationInterval):
+    timestamp = PolymarketProbability.timestamp
+
+    if interval == "4h":
+        bucket_hour = (func.floor(extract("hour", timestamp) / 4) * 4).cast(Integer)
+
+        return func.date_trunc("day", timestamp) + func.make_interval(0, 0, 0, 0, bucket_hour)
+
+    if interval == "1d":
+        return func.date_trunc("day", timestamp)
+
+    return func.date_trunc("week", timestamp)
 
 
 def build_market_expectation_series(
@@ -63,12 +173,9 @@ def build_market_expectation_series(
 
 
 def build_market_expectations_metadata(
-    series: list[MarketExpectationSeries],
+    db: Session,
 ) -> MarketExpectationsMetadata:
-    latest_timestamp = max(
-        (point.timestamp for candidate_series in series for point in candidate_series.points),
-        default=None,
-    )
+    latest_timestamp = db.query(func.max(PolymarketProbability.timestamp)).scalar()
 
     return MarketExpectationsMetadata(latest_timestamp=latest_timestamp)
 

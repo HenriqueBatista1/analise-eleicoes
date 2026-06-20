@@ -1,9 +1,12 @@
 from datetime import datetime
 
+import pytest
+
 from app.services.market_expectations import (
     build_market_expectation_series,
     build_market_expectations_metadata,
     build_market_expectations_summary,
+    get_market_expectations,
 )
 from tests.helpers import (
     candidate_catalog,
@@ -81,34 +84,47 @@ def test_build_market_expectation_series_groups_records_by_candidate_and_market(
     ]
 
 
-def test_build_market_expectations_metadata_returns_latest_timestamp():
-    series = [
-        market_expectation_series(
-            points=[
-                market_expectation_point(timestamp=datetime(2024, 1, 1, 10)),
-                market_expectation_point(timestamp=datetime(2024, 1, 1, 12)),
+def test_build_market_expectations_metadata_returns_latest_database_timestamp(
+    db_session_factory,
+):
+    with db_session_factory() as session:
+        session.add_all(
+            [
+                candidate_catalog(candidate_id=1, display_name="Candidate A"),
+                polymarket_probability(
+                    candidate_catalog_id=1,
+                    candidate_name="Candidate A",
+                    probability=0.25,
+                    timestamp=datetime(2024, 1, 1, 10),
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=1,
+                    candidate_name="Candidate A",
+                    probability=0.50,
+                    timestamp=datetime(2024, 1, 1, 12),
+                ),
             ]
-        ),
-        market_expectation_series(
-            candidate_catalog_id=2,
-            candidate_name="Candidate B",
-            display_name="Candidate B",
-            market_id="market-2",
-            points=[
-                market_expectation_point(timestamp=datetime(2024, 1, 1, 11)),
-            ],
-        ),
-    ]
+        )
+        session.commit()
 
-    metadata = build_market_expectations_metadata(series)
+        metadata = build_market_expectations_metadata(session)
 
-    assert metadata.latest_timestamp == datetime(2024, 1, 1, 12)
+        assert metadata.latest_timestamp == datetime(2024, 1, 1, 12)
 
 
-def test_build_market_expectations_metadata_returns_none_without_points():
-    metadata = build_market_expectations_metadata([])
+def test_build_market_expectations_metadata_returns_none_without_database_records(
+    db_session_factory,
+):
+    with db_session_factory() as session:
+        metadata = build_market_expectations_metadata(session)
 
-    assert metadata.latest_timestamp is None
+        assert metadata.latest_timestamp is None
+
+
+def test_get_market_expectations_rejects_unsupported_interval(db_session_factory):
+    with db_session_factory() as session:
+        with pytest.raises(ValueError, match="Unsupported market expectation interval"):
+            get_market_expectations(session, interval="weekly")
 
 
 def test_build_market_expectations_summary_returns_leader_margin_and_largest_change():

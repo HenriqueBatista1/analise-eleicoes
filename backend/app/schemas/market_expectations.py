@@ -1,6 +1,9 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+
+MarketExpectationInterval = Literal["1h", "4h", "1d", "1w"]
 
 
 class ApiModel(BaseModel):

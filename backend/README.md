@@ -34,6 +34,12 @@ With the virtual environment active and inside `/backend`, run:
 uvicorn app.main:app --reload
 ```
 
+The interactive API documentation is available at:
+
+```text
+http://localhost:8000/docs
+```
+
 ## Unit Tests
 
 With the virtual environment active and inside `/backend`, run:
