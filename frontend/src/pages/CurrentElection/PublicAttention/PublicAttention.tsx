@@ -6,7 +6,7 @@ import {
   PlaceholderChart,
   SourceBadge,
 } from '~/components/ui';
-import { candidateOptions } from '~/pages/CurrentElection/modules/filterOptions';
+import { candidateOptions } from '~/pages/CurrentElection/filterOptions';
 
 export default function PublicAttention() {
   return (

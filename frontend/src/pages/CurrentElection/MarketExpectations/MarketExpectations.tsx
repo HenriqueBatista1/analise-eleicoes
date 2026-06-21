@@ -7,7 +7,7 @@ import {
   SegmentedControl,
   SourceBadge,
 } from '~/components/ui';
-import { candidateOptions, intervalOptions } from '~/pages/CurrentElection/modules/filterOptions';
+import { candidateOptions, intervalOptions } from '~/pages/CurrentElection/filterOptions';
 
 export default function MarketExpectations() {
   return (
