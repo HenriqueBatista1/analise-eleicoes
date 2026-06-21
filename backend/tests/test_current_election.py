@@ -324,3 +324,153 @@ def test_market_expectations_rejects_unsupported_interval(client):
     response_body = response.json()
     assert response_body["detail"][0]["msg"] == "Input should be '1h', '4h', '1d' or '1w'"
     assert response_body["detail"][0]["input"] == "2h"
+
+
+def test_market_expectation_filters_returns_empty_values_when_no_data_exists(client):
+    response = client.get("/api/current-election/market-expectations/filters")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "dateRange": {
+            "min": None,
+            "max": None,
+        },
+        "intervals": ["1h", "4h", "1d", "1w"],
+        "candidates": [],
+    }
+
+
+def test_market_expectation_filters_returns_available_filter_values(
+    client,
+    db_session_factory,
+):
+    with db_session_factory() as session:
+        session.add_all(
+            [
+                candidate_catalog(
+                    candidate_id=1,
+                    display_name="Candidate A",
+                    source_key="market-1",
+                ),
+                candidate_catalog(
+                    candidate_id=2,
+                    display_name="Candidate B",
+                    source_key="market-2",
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=1,
+                    candidate_name="Candidate A",
+                    probability=0.25,
+                    timestamp=datetime(2024, 1, 1, 10),
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=2,
+                    candidate_name="Candidate B",
+                    probability=0.50,
+                    timestamp=datetime(2024, 1, 3, 12),
+                    market_id="market-2",
+                ),
+            ]
+        )
+        session.commit()
+
+    response = client.get("/api/current-election/market-expectations/filters")
+
+    assert response.status_code == 200
+    response_body = response.json()
+    assert response_body["dateRange"] == {
+        "min": "2024-01-01T10:00:00",
+        "max": "2024-01-03T12:00:00",
+    }
+    assert response_body["intervals"] == ["1h", "4h", "1d", "1w"]
+    candidates = sorted(
+        response_body["candidates"],
+        key=lambda candidate: candidate["candidateCatalogId"],
+    )
+    assert candidates == [
+        {
+            "candidateCatalogId": 1,
+            "displayName": "Candidate A",
+        },
+        {
+            "candidateCatalogId": 2,
+            "displayName": "Candidate B",
+        },
+    ]
+
+
+def test_market_expectation_filters_ignores_candidates_without_probabilities(
+    client,
+    db_session_factory,
+):
+    with db_session_factory() as session:
+        session.add_all(
+            [
+                candidate_catalog(
+                    candidate_id=1,
+                    display_name="Candidate A",
+                    source_key="market-1",
+                ),
+                candidate_catalog(
+                    candidate_id=2,
+                    display_name="Candidate B",
+                    source_key="market-2",
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=1,
+                    candidate_name="Candidate A",
+                    probability=0.25,
+                    timestamp=datetime(2024, 1, 1, 10),
+                ),
+            ]
+        )
+        session.commit()
+
+    response = client.get("/api/current-election/market-expectations/filters")
+
+    assert response.status_code == 200
+    assert response.json()["candidates"] == [
+        {
+            "candidateCatalogId": 1,
+            "displayName": "Candidate A",
+        }
+    ]
+
+
+def test_market_expectation_filters_does_not_duplicate_candidates(
+    client,
+    db_session_factory,
+):
+    with db_session_factory() as session:
+        session.add_all(
+            [
+                candidate_catalog(
+                    candidate_id=1,
+                    display_name="Candidate A",
+                    source_key="market-1",
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=1,
+                    candidate_name="Candidate A",
+                    probability=0.25,
+                    timestamp=datetime(2024, 1, 1, 10),
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=1,
+                    candidate_name="Candidate A",
+                    probability=0.50,
+                    timestamp=datetime(2024, 1, 1, 11),
+                ),
+            ]
+        )
+        session.commit()
+
+    response = client.get("/api/current-election/market-expectations/filters")
+
+    assert response.status_code == 200
+    assert response.json()["candidates"] == [
+        {
+            "candidateCatalogId": 1,
+            "displayName": "Candidate A",
+        }
+    ]

@@ -18,12 +18,12 @@ from app.schemas.market_expectations import (
 )
 
 
-SUPPORTED_MARKET_EXPECTATION_INTERVALS: set[MarketExpectationInterval] = {
+SUPPORTED_MARKET_EXPECTATION_INTERVALS: tuple[MarketExpectationInterval, ...] = (
     "1h",
     "4h",
     "1d",
     "1w",
-}
+)
 
 
 def get_market_expectations(
