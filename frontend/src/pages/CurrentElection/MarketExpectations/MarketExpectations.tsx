@@ -1,24 +1,46 @@
+import { useState } from 'react';
+
 import {
-  CandidateSelector,
   MetricCard,
   ModuleHeader,
   ModulePanel,
+  MultiSelect,
   PlaceholderChart,
   SegmentedControl,
   SourceBadge,
 } from '~/components/ui';
-import { candidateOptions, intervalOptions } from '~/pages/CurrentElection/filterOptions';
+
+const mockCandidateOptions = [
+  { label: 'Candidato A', value: 'candidate-a' },
+  { label: 'Candidato B', value: 'candidate-b' },
+  { label: 'Candidato C', value: 'candidate-c' },
+  { label: 'Candidato D', value: 'candidate-d' },
+];
+
+const mockIntervalOptions = [
+  { label: '1h', value: '1h' },
+  { label: '4h', value: '4h' },
+  { label: '1d', value: '1d' },
+  { label: '1 sem.', value: '1w' },
+];
 
 export default function MarketExpectations() {
+  const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
+
   return (
     <ModulePanel>
       <div className="flex flex-col gap-5">
         <ModuleHeader badges={<SourceBadge label="Polymarket" />} title="Expectativa de mercado" />
 
         <div className="flex flex-wrap gap-3">
-          <SegmentedControl label="Intervalo" options={intervalOptions} value="1h" />
+          <SegmentedControl label="Intervalo" options={mockIntervalOptions} value="1h" />
 
-          <CandidateSelector candidates={candidateOptions} label="Candidatos" value="all" />
+          <MultiSelect
+            label="Candidatos"
+            onChange={setSelectedCandidates}
+            options={mockCandidateOptions}
+            value={selectedCandidates}
+          />
         </div>
 
         <div className="flex flex-col gap-5 lg:flex-col-reverse">

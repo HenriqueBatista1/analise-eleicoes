@@ -1,12 +1,4 @@
-import {
-  CandidateSelector,
-  MetricCard,
-  ModuleHeader,
-  ModulePanel,
-  PlaceholderChart,
-  SourceBadge,
-} from '~/components/ui';
-import { candidateOptions } from '~/pages/CurrentElection/filterOptions';
+import { MetricCard, ModuleHeader, ModulePanel, MultiSelect, PlaceholderChart, SourceBadge } from '~/components/ui';
 
 export default function ShareOfSearch() {
   return (
@@ -15,7 +7,7 @@ export default function ShareOfSearch() {
         <ModuleHeader badges={<SourceBadge label="Google Trends" />} title="Share of Search" />
 
         <div className="flex flex-wrap gap-3">
-          <CandidateSelector candidates={candidateOptions} label="Candidatos" value="all" />
+          <MultiSelect label="Candidatos" onChange={() => {}} options={[]} value={[]} />
         </div>
 
         <div className="flex flex-col gap-5 lg:flex-col-reverse">
