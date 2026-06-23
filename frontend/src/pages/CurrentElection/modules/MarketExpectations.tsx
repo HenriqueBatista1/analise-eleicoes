@@ -13,7 +13,12 @@ export default function MarketExpectations() {
   return (
     <ModulePanel>
       <div className="flex flex-col gap-5">
-        <ModuleHeader badges={<SourceBadge label="Polymarket" />} title="Expectativa de mercado" />
+        <ModuleHeader
+          badges={<SourceBadge label="Polymarket" tone="market" />}
+          description="Probabilidade de vitória atribuída a cada candidato pelo mercado de previsões."
+          eyebrow="Leitura principal"
+          title="Expectativa de mercado"
+        />
 
         <div className="flex flex-wrap gap-3">
           <SegmentedControl label="Intervalo" options={intervalOptions} value="1h" />

@@ -17,21 +17,37 @@ notoriedade** em cada ano.
 
 ## 2018
 
-- **Termo-âncora:** `Jair Bolsonaro` (candidato de alta notoriedade durante toda a
-  campanha de 2018; presente em todos os lotes).
+- **Termo-âncora:** `Bolsonaro` (candidato de alta notoriedade durante toda a
+  campanha de 2018; presente em todos os lotes). Usamos o **sobrenome** `Bolsonaro`,
+  não o nome completo `Jair Bolsonaro` — ver a ressalva abaixo.
 - **Janela:** `2018-01-01 2018-12-31`.
 - **Candidatos:**
-  Jair Bolsonaro, Fernando Haddad, Ciro Gomes, Geraldo Alckmin, Marina Silva,
+  Bolsonaro, Lula, Haddad, Ciro Gomes, Geraldo Alckmin, Marina Silva,
   João Amoêdo, Henrique Meirelles, Alvaro Dias, Guilherme Boulos, Cabo Daciolo,
   Vera Lúcia, João Goulart Filho, Eymael.
+  Usamos `Haddad` (sobrenome), não `Fernando Haddad` — ver a ressalva sobre termos
+  abaixo.
 
 ## 2022
 
 - **Termo-âncora:** `Lula` (alta e estável notoriedade ao longo de 2022).
 - **Janela:** `2022-01-01 2022-12-31`.
 - **Candidatos:**
-  Lula, Jair Bolsonaro, Simone Tebet, Ciro Gomes, Felipe d'Avila, Soraya Thronicke,
+  Lula, Bolsonaro, Simone Tebet, Ciro Gomes, Felipe d'Avila, Soraya Thronicke,
   Padre Kelmon, Léo Péricles, Sofia Manzano, Vera Lúcia, Eymael.
+
+> ⚠️ **`Bolsonaro` × `Jair Bolsonaro`.** Originalmente 2022/2018 usavam o termo
+> `Jair Bolsonaro`. Uma auditoria (ago–out/2022, mesma requisição) mostrou que o nome
+> completo tem **~16,7× menos** interesse de busca que o sobrenome (`Jair Bolsonaro` ≈
+> 0,9 vs `Bolsonaro` ≈ 15,1 de média). Isso inflava artificialmente o Share de Search
+> de Lula (chegava a ~92% × ~8%). Trocando para `Bolsonaro`, o Share de 2022 entre os
+> dois principais passou para ~44,5% (Lula) × ~55,5% (Bolsonaro). Detalhes em
+> `auditoria_google_trends_importacao.md`.
+>
+> O mesmo vale para **`Haddad` × `Fernando Haddad`** em 2018: o sobrenome teve
+> **~7,7×** mais interesse de busca que o nome completo (`Haddad` ≈ 2,9 vs
+> `Fernando Haddad` ≈ 0,4 de média). Por isso 2018 usa `Haddad`. Para auditar
+> qualquer termo, use `scripts/audit_term_comparison.py`.
 
 ## Eleição atual (`current`)
 
@@ -42,6 +58,7 @@ notoriedade** em cada ano.
   | Termo de busca       | Candidato / partido               |
   | -------------------- | --------------------------------- |
   | `Lula`               | Luiz Inácio Lula da Silva (PT)    |
+  | `Bolsonaro`          | Atenção agregada à família/marca Bolsonaro (não é um candidato) |
   | `Aldo Rebelo`        | Aldo Rebelo (DC)                  |
   | `Augusto Cury`       | Augusto Cury (Avante)             |
   | `Cabo Daciolo`       | Cabo Daciolo (Mobiliza)           |
@@ -58,6 +75,14 @@ notoriedade** em cada ano.
 > propósito — o Google Trends casa strings de busca, e "Nome (Partido)" praticamente
 > não é pesquisado, o que zeraria a série. Para Luiz Inácio Lula da Silva usamos
 > `Lula`, que também é o termo-âncora.
+
+> **`Bolsonaro` na eleição atual.** Incluímos o sobrenome `Bolsonaro` como sinal de
+> **atenção pública agregada** à família/marca — Jair Bolsonaro segue altíssimo em
+> buscas mesmo inelegível, e o termo captura também Flávio, Eduardo e Michelle. É ótimo
+> para o Dash 1 (Atenção pública). ⚠️ **No Dash 3 (Share of Search), não selecione
+> `Bolsonaro` e `Flávio Bolsonaro` juntos**: as buscas por "Flávio Bolsonaro" também
+> contêm "Bolsonaro", então somá-los conta a atenção em dobro. Escolha um dos dois
+> conforme a leitura desejada (agregado vs. candidato específico).
 
 > ⚠️ A lista de candidatos da eleição atual **não é definitiva** e deve ser editada
 > conforme a corrida evolui. Se a esvaziar, o pipeline ignora o grupo `current` sem

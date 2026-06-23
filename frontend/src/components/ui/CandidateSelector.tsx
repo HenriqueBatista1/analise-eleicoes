@@ -12,10 +12,10 @@ type CandidateSelectorProps = {
 export default function CandidateSelector({ candidates, label, value }: CandidateSelectorProps) {
   return (
     <div className="flex w-full flex-col gap-2 sm:w-64">
-      <span className="font-medium text-muted text-xs uppercase">{label}</span>
+      <span className="font-mono text-[11px] text-muted uppercase tracking-wide">{label}</span>
 
       <select
-        className="bg-navigation border-border h-10 rounded-md border px-3 text-foreground text-sm"
+        className="bg-surface border-border h-10 rounded-md border px-3 font-mono text-foreground text-sm"
         defaultValue={value}
       >
         {candidates.map((candidate) => (

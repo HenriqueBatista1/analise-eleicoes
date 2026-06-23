@@ -1,3 +1,4 @@
+export { default as CandidateMultiSelect } from './CandidateMultiSelect';
 export { default as CandidateSelector } from './CandidateSelector';
 export { default as MetricCard } from './MetricCard';
 export { default as ModuleHeader } from './ModuleHeader';

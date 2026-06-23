@@ -27,10 +27,21 @@ GOOGLE_TRENDS_TERMS_PER_BATCH = 4
 GOOGLE_TRENDS_ELECTION_GROUPS = {
     "2018": {
         "timeframe": "2018-01-01 2018-12-31",
-        "anchor_term": "Jair Bolsonaro",
+        "anchor_term": "Bolsonaro",
+        # "Lula" entra logo após a âncora para cair no batch_01 junto de Haddad e
+        # Ciro: foi o pré-candidato dominante até a impugnação pelo TSE (31/08/2018),
+        # com Haddad herdando sua base (11/09/2018). Mantê-lo é essencial para ler a
+        # transferência de atenção. A âncora é "Bolsonaro" (alto e estável o ano todo,
+        # evitando interest_scaled nulo no fim de 2018). Usamos o sobrenome "Bolsonaro",
+        # e não o nome completo "Jair Bolsonaro", porque o Google Trends casa strings de
+        # busca e o público busca esmagadoramente "Bolsonaro"; o nome completo subestima
+        # fortemente o interesse (ver docs/google_trends_metodologia.md). Pela mesma
+        # razão usamos "Haddad" (e não "Fernando Haddad"): auditoria de 2018 mostrou
+        # "Haddad" com ~7,7x mais interesse de busca que o nome completo.
         "terms": [
-            "Jair Bolsonaro",
-            "Fernando Haddad",
+            "Bolsonaro",
+            "Lula",
+            "Haddad",
             "Ciro Gomes",
             "Geraldo Alckmin",
             "Marina Silva",
@@ -47,9 +58,13 @@ GOOGLE_TRENDS_ELECTION_GROUPS = {
     "2022": {
         "timeframe": "2022-01-01 2022-12-31",
         "anchor_term": "Lula",
+        # "Bolsonaro" (sobrenome) em vez de "Jair Bolsonaro": o Google Trends casa
+        # strings de busca e o público busca muito mais "Bolsonaro". Usar o nome
+        # completo subestimava drasticamente o interesse e inflava o Share de Lula
+        # (ver docs/auditoria_google_trends_importacao.md e a metodologia).
         "terms": [
             "Lula",
-            "Jair Bolsonaro",
+            "Bolsonaro",
             "Simone Tebet",
             "Ciro Gomes",
             "Felipe d'Avila",
@@ -68,8 +83,16 @@ GOOGLE_TRENDS_ELECTION_GROUPS = {
         # omitted because Google Trends matches search strings. "Lula" is used
         # for Luiz Inácio Lula da Silva and doubles as the anchor term.
         # Configurable list — not a definitive ballot.
+        #
+        # "Bolsonaro" (sobrenome) é um termo de ATENÇÃO PÚBLICA agregada da
+        # família/marca (Jair, Flávio, Eduardo, Michelle...), não um candidato
+        # específico. Fica logo após a âncora para cair no batch_01 e ser
+        # diretamente comparável a "Lula". Atenção: no Share of Search, "Bolsonaro"
+        # e "Flávio Bolsonaro" se sobrepõem (as buscas por Flávio também contêm
+        # "Bolsonaro") — não selecionar os dois juntos para não contar em dobro.
         "terms": [
             "Lula",
+            "Bolsonaro",
             "Aldo Rebelo",
             "Augusto Cury",
             "Cabo Daciolo",
@@ -85,8 +108,7 @@ GOOGLE_TRENDS_ELECTION_GROUPS = {
     },
 }
 
-# Output directories (anchored to the repo root, independent of the cwd)
+# Repo root (anchored independently of the cwd). Used to resolve relative paths
+# such as the service account file in the Google Sheets configuration.
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-RAW_DATA_DIR = str(PROJECT_ROOT / "dados-brutos")
-PROCESSED_DATA_DIR = str(PROJECT_ROOT / "dados-processados")
 DOCS_DIR = str(PROJECT_ROOT / "docs")

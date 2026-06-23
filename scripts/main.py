@@ -23,8 +23,9 @@ def main() -> int:
     finally:
         session.close()
 
-    # Google Trends is database-independent and writes CSV files. A failure here
-    # must not break the rest of the execution, so it is isolated in its own block.
+    # Google Trends is database-independent and publishes straight to Google
+    # Sheets. A failure here must not break the rest of the execution, so it is
+    # isolated in its own block.
     try:
         result = run_google_trends_pipeline()
         print(result)

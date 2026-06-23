@@ -38,6 +38,38 @@ só são diretamente comparáveis quando coletados **na mesma chamada** `build_p
 Se cada candidato fosse coletado isoladamente, cada série teria seu próprio pico em
 100 e os números **não seriam comparáveis** entre candidatos.
 
+## Termo textual × entidade/tópico (o risco "Bolsonaro" × "Jair Bolsonaro")
+
+O `pytrends`/Google Trends usado aqui consulta **strings de busca textuais** — casa
+literalmente o que foi digitado, sem desambiguar pessoa, partido ou cargo. Isso é
+diferente do **tópico/entidade** do Google Trends (ex.: "Jair Bolsonaro — político
+brasileiro"), que agrega todas as buscas relacionadas àquela entidade. Não usamos
+tópico/entidade porque exige IDs de tópico (`/m/...`) e dificulta a reprodutibilidade.
+
+**Consequência prática:** a grafia escolhida muda drasticamente o resultado. O público
+busca pelo **sobrenome**, não pelo nome completo. Auditoria (ago–out/2022, mesma
+requisição, mesma escala 0–100):
+
+| Termo            | Média de interesse | Pico |
+| ---------------- | ------------------ | ---- |
+| `Lula`           | 12,6               | 100  |
+| `Bolsonaro`      | 15,1               | 97   |
+| `Jair Bolsonaro` | **0,9**            | 9    |
+
+`Bolsonaro` teve **~16,7×** mais interesse que `Jair Bolsonaro`. Coletar
+`Jair Bolsonaro` inflava o Share of Search de `Lula` para ~92% (× ~8% de Bolsonaro);
+com `Bolsonaro`, o Share entre os dois ficou ~44,5% × ~55,5% — realista. Por isso
+2018 e 2022 usam `Bolsonaro`.
+
+O mesmo padrão se repetiu com **`Haddad` × `Fernando Haddad`** em 2018: o sobrenome
+teve **~7,7×** mais interesse (`Haddad` ≈ 2,9 vs `Fernando Haddad` ≈ 0,4 de média). Por
+isso 2018 usa `Haddad`.
+
+Regra geral: **prefira a string mais buscada (geralmente o sobrenome popular)**, não o
+nome de urna completo — mas verifique homônimos quando o sobrenome for ambíguo. Para
+auditar qualquer termo (mesma requisição, mesma escala) use
+`scripts/audit_term_comparison.py`.
+
 ## Mais de 5 candidatos: coleta em lotes com termo-âncora
 
 O Google Trends aceita no máximo **~5 termos por consulta**. Como agora acompanhamos
@@ -54,7 +86,7 @@ A solução é a **coleta em lotes com termo-âncora**:
 Exemplo (2022, âncora "Lula"):
 
 ```
-Lote 1: Lula, Jair Bolsonaro, Simone Tebet, Ciro Gomes, Felipe d'Avila
+Lote 1: Lula, Bolsonaro, Simone Tebet, Ciro Gomes, Felipe d'Avila
 Lote 2: Lula, Soraya Thronicke, Padre Kelmon, Léo Péricles, Sofia Manzano
 Lote 3: Lula, Vera Lúcia, Eymael
 ```
@@ -82,7 +114,7 @@ Regras adotadas:
   atual, o ponto **não pode ser reescalado** e `interest_scaled` fica **nulo (vazio)**.
   Essa é uma decisão intencional para não inventar valores; o `interest_raw` é sempre
   preservado para auditoria.
-- O termo-âncora é mantido **apenas a partir do lote base** no arquivo consolidado,
+- O termo-âncora é mantido **apenas a partir do lote base** nos dados consolidados,
   evitando repetição excessiva.
 
 > ⚠️ A reescala é uma **aproximação metodológica**. Ela melhora a comparabilidade
@@ -94,8 +126,8 @@ Regras adotadas:
 Não fazemos extração incremental. Como o índice é renormalizado em função da janela
 consultada, concatenar coletas de janelas diferentes produziria séries
 inconsistentes. Por isso **cada execução refaz a janela completa** de cada ano
-(`timeframe` por grupo eleitoral). O arquivo canônico é sobrescrito e uma cópia
-timestampada é guardada para rastreabilidade.
+(`timeframe` por grupo eleitoral). A aba correspondente no Google Sheets é
+sobrescrita por completo a cada execução.
 
 ## Recomendações de uso (dashboard e análise)
 
@@ -120,3 +152,19 @@ timestampada é guardada para rastreabilidade.
 > Os números coletados são **estimativas de interesse relativo**, adequados para
 > análise de tendência e comparação entre candidatos na mesma janela — não para
 > afirmar volumes de busca ou intenção de voto.
+
+## Checklist antes de usar dados no dashboard
+
+- [ ] Os **termos** são as strings mais buscadas (sobrenome popular, não nome completo)?
+      Em caso de dúvida, rode `scripts/audit_term_comparison.py`.
+- [ ] O **termo-âncora** tem interesse alto e estável na janela (sem zeros) e está na
+      própria lista de candidatos do ano?
+- [ ] A coleta foi recente (cada execução refaz a janela inteira; o índice é
+      renormalizado por janela)?
+- [ ] A auditoria `scripts/audit_google_trends_import.py` reportou **0 duplicatas** por
+      `election_year+date+term`, **0 nulos** e **0 valores fora de escala**?
+- [ ] O âncora aparece **apenas** em `batch_01` no dataset processado?
+- [ ] O Share of Search usa **média** (não soma) e o denominador inclui só os candidatos
+      **selecionados**?
+- [ ] Comparações são **dentro do mesmo ano** (nunca entre anos sem ressalva explícita)?
+- [ ] Picos próximos de eventos são tratados como **contexto**, nunca como causa?

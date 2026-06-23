@@ -8,12 +8,14 @@ export default function AttentionMarketComparison() {
         <ModuleHeader
           badges={
             <>
-              <SourceBadge label="Google Trends" />
-              <SourceBadge label="Wikipedia" />
-              <SourceBadge label="Polymarket" />
+              <SourceBadge label="Google Trends" tone="attention" />
+              <SourceBadge label="Wikipedia" tone="attention" />
+              <SourceBadge label="Polymarket" tone="market" />
             </>
           }
-          title="Atenção pública x expectativa de mercado"
+          description="Cada ponto é um candidato: share of search no eixo X, probabilidade de mercado no eixo Y."
+          eyebrow="Síntese"
+          title="Atenção pública × expectativa de mercado"
         />
 
         <div className="flex flex-wrap gap-3">

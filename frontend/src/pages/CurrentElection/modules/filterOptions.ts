@@ -7,8 +7,9 @@ export const intervalOptions = [
 
 export const candidateOptions = [
   { label: 'Todos os candidatos', value: 'all' },
-  { label: 'Candidato A', value: 'candidate-a' },
-  { label: 'Candidato B', value: 'candidate-b' },
-  { label: 'Candidato C', value: 'candidate-c' },
-  { label: 'Candidato D', value: 'candidate-d' },
+  { label: 'Lula', value: 'lula' },
+  { label: 'Flávio Bolsonaro', value: 'flavio-bolsonaro' },
+  { label: 'Ronaldo Caiado', value: 'ronaldo-caiado' },
+  { label: 'Romeu Zema', value: 'romeu-zema' },
+  { label: 'Aldo Rebelo', value: 'aldo-rebelo' },
 ];

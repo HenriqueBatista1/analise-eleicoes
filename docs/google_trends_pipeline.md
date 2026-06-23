@@ -1,29 +1,34 @@
 # Google Trends — Pipeline
 
 Pipeline ETL que coleta o interesse de busca do Google Trends para candidatos
-presidenciais brasileiros de **2018**, **2022** e da **eleição atual**, e o persiste
-em arquivos CSV (sem banco de dados). Usa coleta em **lotes com termo-âncora** para
-contornar o limite de ~5 termos por consulta — ver `google_trends_metodologia.md`.
+presidenciais brasileiros de **2018**, **2022** e da **eleição atual**, e o publica
+**direto no Google Sheets** (uma aba por dataset, sem banco de dados e sem CSV em
+disco). Usa coleta em **lotes com termo-âncora** para contornar o limite de ~5 termos
+por consulta — ver `google_trends_metodologia.md`. A configuração e a mecânica do
+Google Sheets estão em `google_sheets_sync.md`.
 
 ## Fluxo do pipeline
 
 ```
+get_spreadsheet()                             [Setup]    → abre a planilha (lê .env)
 Para cada grupo eleitoral (2018, 2022, current):
   build_trends_batches(terms, anchor)        → lotes de 1 âncora + até 4 candidatos
   Para cada lote:
     fetch_interest_over_time_batch(...)       [Extract]  → DataFrame wide
-    save_raw_google_trends_batch_csv(...)     [Load]     → /dados-brutos/...batch_NN.csv
+    save_raw_google_trends_batch(...)         [Load]     → aba raw_google_trends_{ano}_batch_NN
     transform_batch_interest_over_time(...)   [Transform]→ long com interest_raw
   rescale_batches_by_anchor(lotes, anchor)    [Transform]→ adiciona interest_scaled
-  save_processed_google_trends_year_csv(...)  [Load]     → /dados-processados/{ano}_interest_long.csv
+  save_processed_google_trends_year(...)      [Load]     → aba proc_google_trends_{ano}_interest_long
 
 Consolidar todos os anos:
-  save_processed_google_trends_all_csv(...)   [Load]     → google_trends_all_elections_interest_long.csv
+  save_processed_google_trends_all(...)       [Load]     → aba proc_google_trends_all_elections_interest_long
 ```
 
 A função de orquestração é `run_google_trends_pipeline()` em
 `scripts/pipelines/google_trends.py`. É **independente do banco de dados** e **refaz a
-janela completa** a cada execução.
+janela completa** a cada execução. As abas são separadas por camada: `raw_*` para os
+dados brutos e `proc_*` para os processados. A escrita reusa
+`scripts/core/sheets.py` (autenticação + `write_dataframe_to_tab`).
 
 Retorno (estrutura; números ilustrativos):
 
@@ -32,11 +37,11 @@ Retorno (estrutura; números ilustrativos):
     "source": "google_trends",
     "status": "success",
     "groups": {
-        "2018":    {"terms_count": 13, "batches_count": 3, "processed_rows": 600, "processed_path": ".../google_trends_2018_interest_long.csv"},
-        "2022":    {"terms_count": 11, "batches_count": 3, "processed_rows": 520, "processed_path": ".../google_trends_2022_interest_long.csv"},
-        "current": {"terms_count": 0,  "batches_count": 0, "processed_rows": 0,   "processed_path": None},
+        "2018":    {"terms_count": 13, "batches_count": 3, "processed_rows": 600, "processed_tab": "proc_google_trends_2018_interest_long"},
+        "2022":    {"terms_count": 11, "batches_count": 3, "processed_rows": 520, "processed_tab": "proc_google_trends_2022_interest_long"},
+        "current": {"terms_count": 0,  "batches_count": 0, "processed_rows": 0,   "processed_tab": None},
     },
-    "all_processed_path": ".../google_trends_all_elections_interest_long.csv",
+    "all_processed_tab": "proc_google_trends_all_elections_interest_long",
 }
 ```
 
@@ -44,19 +49,20 @@ Se `current["terms"]` estiver vazio, o pipeline **não quebra**: registra um avi
 reporta o grupo com contagens zeradas e segue com 2018 e 2022. Falhas de coleta em um
 lote são registradas e o pipeline continua com os demais.
 
-## Arquivos gerados
+## Abas geradas no Google Sheets
 
-- Brutos: `dados-brutos/google_trends_{ano}_batch_{NN}.csv` (+ cópia timestampada).
-- Processados por ano: `dados-processados/google_trends_{ano}_interest_long.csv` (+ timestampada).
-- Consolidado: `dados-processados/google_trends_all_elections_interest_long.csv` (+ timestampada).
+- Brutos: `raw_google_trends_{ano}_batch_{NN}`.
+- Processados por ano: `proc_google_trends_{ano}_interest_long`.
+- Consolidado: `proc_google_trends_all_elections_interest_long`.
 
-As pastas ficam na **raiz do repositório** (mesmo nível de `docs/`); os caminhos são
-resolvidos via `Path(__file__)` em `constants.py`. Esquema das colunas em
-`google_trends_dicionario_dados.md`.
+A cada execução cada aba é limpa e reescrita (cabeçalho + linhas, `RAW`). Esquema das
+colunas em `google_trends_dicionario_dados.md`. Detalhes de credenciais, `.env` e
+consumo pelo React em `google_sheets_sync.md`.
 
 ## Dependências
 
-Em `scripts/requirements.txt`: `pandas`, `pytrends`.
+Em `scripts/requirements.txt`: `pandas`, `pytrends`, `gspread`, `google-auth`,
+`python-dotenv`.
 
 ```bash
 cd scripts
@@ -65,13 +71,17 @@ pip install -r requirements.txt
 
 ## Como executar
 
+Requer um `.env` configurado com `GOOGLE_SHEETS_ID` e `GOOGLE_SERVICE_ACCOUNT_FILE`
+(ver `google_sheets_sync.md`). Depois:
+
 ```bash
 cd scripts
 python main.py
 ```
 
 O Google Trends roda junto do pipeline da Polymarket; uma falha no Google Trends
-**não interrompe** os demais pipelines.
+(inclusive de configuração/credenciais do Sheets) **não interrompe** os demais
+pipelines.
 
 ## Onde configurar
 
@@ -94,8 +104,9 @@ Tudo em `scripts/constants.py`, no dicionário `GOOGLE_TRENDS_ELECTION_GROUPS`:
 
 ## Uso futuro no dashboard React
 
-O consolidado `dados-processados/google_trends_all_elections_interest_long.csv` foi
-desenhado para consumo direto por um **dashboard React** comparando eleições:
+O consolidado, publicado na aba `proc_google_trends_all_elections_interest_long`, foi
+desenhado para consumo direto por um **dashboard React** comparando eleições (como ler
+a aba como CSV: ver `google_sheets_sync.md`):
 
 - Uma linha por (`date`, `term`, `election_year`) facilita séries temporais por
   candidato e filtros por ano.

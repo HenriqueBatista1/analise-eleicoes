@@ -1,20 +1,18 @@
 # Google Trends — Dicionário de Dados
 
-Documentação dos arquivos CSV gerados pelo pipeline do Google Trends.
+Documentação das abas publicadas no Google Sheets pelo pipeline do Google Trends.
 
-Os arquivos canônicos são sobrescritos a cada execução. A cada execução também é
-gravada uma cópia com sufixo de timestamp (`_YYYYMMDD_HHMMSS`) para rastreabilidade
-(essas cópias não são versionadas no git).
+Cada aba é sobrescrita por completo a cada execução (cabeçalho + linhas, `RAW`).
+Configuração e mecânica de publicação em `google_sheets_sync.md`.
 
 ---
 
 ## 1. Dados brutos (por ano e lote)
 
-**Arquivos:** `dados-brutos/google_trends_{ano}_batch_{NN}.csv`
-**Cópia timestampada:** `dados-brutos/google_trends_{ano}_batch_{NN}_YYYYMMDD_HHMMSS.csv`
+**Abas:** `raw_google_trends_{ano}_batch_{NN}`
 
-Exemplos: `google_trends_2018_batch_01.csv`, `google_trends_2022_batch_03.csv`,
-`google_trends_current_batch_01.csv`.
+Exemplos: `raw_google_trends_2018_batch_01`, `raw_google_trends_2022_batch_03`,
+`raw_google_trends_current_batch_01`.
 
 Formato **wide**, o mais próximo possível do retorno do `pytrends`. O índice de data
 é promovido a coluna `date`; há uma coluna por termo do lote (incluindo o âncora) e a
@@ -33,8 +31,8 @@ coluna `isPartial` do Google é preservada.
 Exemplo:
 
 ```csv
-date,Lula,Jair Bolsonaro,Simone Tebet,Ciro Gomes,Felipe d'Avila,isPartial
-2022-03-13,80,70,10,8,3,False
+date,Lula,Bolsonaro,Simone Tebet,Ciro Gomes,Felipe d'Avila,isPartial
+2022-03-13,80,84,10,8,3,False
 ```
 
 ---
@@ -43,17 +41,16 @@ date,Lula,Jair Bolsonaro,Simone Tebet,Ciro Gomes,Felipe d'Avila,isPartial
 
 ### 2.1 Por ano
 
-**Arquivos:** `dados-processados/google_trends_{ano}_interest_long.csv`
-**Cópia timestampada:** `..._YYYYMMDD_HHMMSS.csv`
+**Abas:** `proc_google_trends_{ano}_interest_long`
 
-Exemplos: `google_trends_2018_interest_long.csv`, `google_trends_2022_interest_long.csv`,
-`google_trends_current_interest_long.csv`.
+Exemplos: `proc_google_trends_2018_interest_long`, `proc_google_trends_2022_interest_long`,
+`proc_google_trends_current_interest_long`.
 
 ### 2.2 Consolidado geral
 
-**Arquivo:** `dados-processados/google_trends_all_elections_interest_long.csv`
+**Aba:** `proc_google_trends_all_elections_interest_long`
 
-Une os arquivos por ano em um único CSV (mesmo esquema de colunas).
+Une os dados por ano em uma única aba (mesmo esquema de colunas).
 
 Ambos usam o formato **long/tidy**: uma linha por (`date`, `term`), com os valores
 bruto e reescalado e os metadados de coleta. Pronto para consumo em React, pandas ou
@@ -79,7 +76,7 @@ Exemplo:
 
 ```csv
 date,election_year,term,interest_raw,interest_scaled,geo,timeframe,source,batch_id,anchor_term,is_anchor,is_partial,collected_at
-2018-01-07,2018,Fernando Haddad,32,28.5,BR,2018-01-01 2018-12-31,google_trends,batch_01,Jair Bolsonaro,False,False,2026-06-18T20:00:00
+2018-01-07,2018,Haddad,32,28.5,BR,2018-01-01 2018-12-31,google_trends,batch_01,Bolsonaro,False,False,2026-06-18T20:00:00
 2022-03-13,2022,Lula,80,80.0,BR,2022-01-01 2022-12-31,google_trends,batch_01,Lula,True,False,2026-06-18T20:00:00
 ```
 
