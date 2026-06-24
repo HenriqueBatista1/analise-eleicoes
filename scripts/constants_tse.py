@@ -5,13 +5,17 @@ import os
 ## =================================================================
 
 # 1. URLs dos arquivos ZIP originais do repositório de Dados Abertos do TSE
-URL_TSE_2018 = "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2018.zip"
-URL_TSE_2022 = "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2022.zip"
+URL_TSE_PRESIDENCIA_2018 = "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2018.zip"
+URL_TSE_PRESIDENCIA_2022 = "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2022.zip"
+URL_TSE_ELEITORADO_2018 = "https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitorado/perfil_eleitorado_2018.zip"
+URL_TSE_ELEITORADO_2022 = "https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitorado/perfil_eleitorado_2022.zip"
 
 # 2. Arquivos Alvo dentro do ZIP (Focando na abrangência Nacional/Presidente)
 # Isso garante que não vamos carregar os dados de governadores, senadores, etc.
-TARGET_CSV_2018 = "votacao_candidato_munzona_2018_BR.csv"
-TARGET_CSV_2022 = "votacao_candidato_munzona_2022_BR.csv"
+TARGET_CSV_PRESIDENCIA_2018 = "votacao_candidato_munzona_2018_BR.csv"
+TARGET_CSV_PRESIDENCIA_2022 = "votacao_candidato_munzona_2022_BR.csv"
+TARGET_CSV_ELEITORADO_2018 = "perfil_eleitorado_2018_BR.csv"
+TARGET_CSV_ELEITORADO_2022 = "perfil_eleitorado_2022_BR.csv"
 
 # 3. Configurações de Leitura (Conforme o documento leiame.pdf)
 CSV_ENCODING = "latin-1"

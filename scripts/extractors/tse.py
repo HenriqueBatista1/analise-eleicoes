@@ -10,10 +10,14 @@ DIRETORIO_PAI = os.path.dirname(DIRETORIO_ATUAL)
 sys.path.append(DIRETORIO_PAI)
 
 from constants_tse import (
-    URL_TSE_2018, 
-    URL_TSE_2022, 
-    TARGET_CSV_2018, 
-    TARGET_CSV_2022, 
+    URL_TSE_PRESIDENCIA_2018,
+    URL_TSE_PRESIDENCIA_2022,
+    TARGET_CSV_PRESIDENCIA_2018,
+    TARGET_CSV_PRESIDENCIA_2022,
+    URL_TSE_ELEITORADO_2018, 
+    URL_TSE_ELEITORADO_2022, 
+    TARGET_CSV_ELEITORADO_2018, 
+    TARGET_CSV_ELEITORADO_2022, 
     RAW_DATA_DIR
 )
 
@@ -66,11 +70,13 @@ def main():
     print("--- Iniciando Pipeline de Extração: TSE ---")
     
     # Executa a extração para 2018
-    baixar_e_extrair_tse(URL_TSE_2018, TARGET_CSV_2018)
+    baixar_e_extrair_tse(URL_TSE_PRESIDENCIA_2018, TARGET_CSV_PRESIDENCIA_2018)
+    baixar_e_extrair_tse(URL_TSE_ELEITORADO_2018, TARGET_CSV_ELEITORADO_2018)
     
     # Executa a extração para 2022
-    baixar_e_extrair_tse(URL_TSE_2022, TARGET_CSV_2022)
-    
+    baixar_e_extrair_tse(URL_TSE_PRESIDENCIA_2022, TARGET_CSV_PRESIDENCIA_2022)
+    baixar_e_extrair_tse(URL_TSE_ELEITORADO_2022, TARGET_CSV_ELEITORADO_2022)
+
     print("--- Extração Finalizada com Sucesso! ---")
 
 if __name__ == "__main__":
