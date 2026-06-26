@@ -82,6 +82,7 @@ def save_candidate_votes_by_round(year: int) -> None:
             .groupby("NM_URNA_CANDIDATO", as_index=False)["QT_VOTOS_NOMINAIS"]
             .sum()
             .sort_values("QT_VOTOS_NOMINAIS", ascending=False)
+            .reset_index(drop=True)
         )
 
         table.loc[len(table)] = {
