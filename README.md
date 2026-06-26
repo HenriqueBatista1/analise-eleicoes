@@ -14,16 +14,24 @@ A arquitetura do projeto segue um modelo de monorepo estruturado para processame
 
 Crie uma cópia do arquivo `.env.example` na raiz do projeto e renomeie-a para `.env`.
 
-Variáveis usadas atualmente:
+Variáveis de ambiente:
 
 - `DATABASE_URL`: URL de conexão PostgreSQL. Preencha com a connection string do banco que será usado pelo projeto.
 - `BACKEND_CORS_ORIGINS`: origens autorizadas a acessar o backend pelo browser. Preencha com URLs separadas por vírgula, por exemplo `http://localhost:5173,https://votometria.vercel.app`.
+
+O frontend possui um arquivo de ambiente próprio em `/frontend`.
+
+Crie uma cópia de `frontend/.env.example` como `frontend/.env`.
+
+Variável de ambiente do frontend:
+
+- `VITE_API_BASE_URL`: URL base da API backend, incluindo o prefixo `/api`.
 
 ---
 
 ## Frontend
 
-O frontend usa Vite, React, TypeScript e Tailwind CSS.
+O frontend usa Vite, React, TypeScript, Tailwind CSS, TanStack Query e Recharts.
 
 Para instalar as dependências:
 
