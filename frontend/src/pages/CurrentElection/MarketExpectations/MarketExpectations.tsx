@@ -108,7 +108,7 @@ export default function MarketExpectations() {
             <MarketExpectationsChart interval={selectedInterval} series={series} />
           )}
 
-          <div className="gap-3 grid md:grid-cols-4">
+          <div className="gap-3 grid sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard text={currentLeaderText} title="Líder atual" value={currentLeaderValue} />
 
             <MetricCard title="Margem" value={leaderMarginValue} />

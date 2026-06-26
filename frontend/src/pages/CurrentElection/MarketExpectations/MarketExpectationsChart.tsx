@@ -30,28 +30,30 @@ export default function MarketExpectationsChart({ interval, series }: MarketExpe
   const data = buildChartData(series, interval);
 
   return (
-    <div className="h-96 min-w-0">
+    <div className="h-72 min-w-0 sm:h-96">
       <ResponsiveContainer height="100%" width="100%">
-        <LineChart data={data} margin={{ bottom: 28, left: 48, right: 64, top: 8 }}>
+        <LineChart data={data} margin={{ bottom: 20, left: 0, right: 8, top: 8 }}>
           <CartesianGrid stroke="var(--color-border)" strokeDasharray="4 4" vertical={false} />
 
           <XAxis
             dataKey="timestampMs"
             domain={['dataMin', 'dataMax']}
-            minTickGap={24}
+            minTickGap={12}
             scale="time"
-            tickFormatter={(value) => formatDateTimeFromTimestamp(Number(value))}
+            tick={{ fontSize: 10 }}
+            tickFormatter={(value) => formatCompactDateTimeFromTimestamp(Number(value))}
             tickLine={false}
-            tickMargin={8}
+            tickMargin={6}
             type="number"
           />
 
           <YAxis
             domain={['auto', 'auto']}
+            tick={{ fontSize: 10 }}
             tickFormatter={(value) => formatProbability(Number(value))}
             tickLine={false}
-            tickMargin={8}
-            width={76}
+            tickMargin={4}
+            width={52}
           />
 
           <Tooltip
@@ -60,7 +62,7 @@ export default function MarketExpectationsChart({ interval, series }: MarketExpe
             wrapperStyle={{ zIndex: 50 }}
           />
 
-          <Legend />
+          <Legend iconSize={8} wrapperStyle={{ fontSize: 12, lineHeight: '16px' }} />
 
           {lines.map((line) => (
             <Line
@@ -74,7 +76,12 @@ export default function MarketExpectationsChart({ interval, series }: MarketExpe
             />
           ))}
 
-          <Brush dataKey="timestampMs" tickFormatter={(value) => formatDateTimeFromTimestamp(Number(value))} />
+          <Brush
+            dataKey="timestampMs"
+            height={24}
+            tickFormatter={(value) => formatCompactDateTimeFromTimestamp(Number(value))}
+            travellerWidth={5}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -102,6 +109,14 @@ function buildChartData(series: MarketExpectationSeries[], interval: MarketExpec
 
 function formatDateTimeFromTimestamp(value: number) {
   return formatDateTime(new Date(value).toISOString());
+}
+
+function formatCompactDateTimeFromTimestamp(value: number) {
+  const date = new Date(value);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+
+  return `${day}/${month}`;
 }
 
 function getBucketTimestamp(value: string, interval: MarketExpectationInterval) {
