@@ -1,18 +1,11 @@
 import { useState } from 'react';
 
-import {
-  IntervalSelector,
-  MetricCard,
-  ModuleHeader,
-  ModulePanel,
-  MultiSelect,
-  PlaceholderChart,
-  SourceBadge,
-} from '~/components/ui';
+import { IntervalSelector, MetricCard, ModuleHeader, ModulePanel, MultiSelect, SourceBadge } from '~/components/ui';
 import { useMarketExpectationFilters } from '~/fetchers/hooks/useMarketExpectationFilters';
 import { useMarketExpectations } from '~/fetchers/hooks/useMarketExpectations';
 import type { MarketExpectationInterval } from '~/models/marketExpectations';
 import { EMPTY_VALUE, formatProbability } from '~/utils/format';
+import MarketExpectationsChart from './MarketExpectationsChart';
 
 const DEFAULT_INTERVALS: MarketExpectationInterval[] = ['1h', '4h', '1d', '1w'];
 
@@ -39,6 +32,7 @@ export default function MarketExpectations() {
   const hasError = filtersQuery.isError || marketExpectationsQuery.isError;
   const isLoading = isFiltersLoading || isSeriesLoading;
   const hasSeries = (marketExpectationsQuery.data?.series.length ?? 0) > 0;
+  const series = marketExpectationsQuery.data?.series ?? [];
 
   const candidateOptions =
     filtersQuery.data?.candidates
@@ -107,12 +101,7 @@ export default function MarketExpectations() {
               {chartFeedback}
             </div>
           ) : (
-            <PlaceholderChart
-              imageAlt="Placeholder de gráfico temporal das probabilidades"
-              imageSrc="/chart-placeholders/market-expectations.png"
-              label="Placeholder de gráfico temporal das probabilidades"
-              variant="line"
-            />
+            <MarketExpectationsChart series={series} />
           )}
 
           <div className="gap-3 grid md:grid-cols-4">
