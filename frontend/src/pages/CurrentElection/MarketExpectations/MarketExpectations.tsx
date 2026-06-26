@@ -26,7 +26,9 @@ export default function MarketExpectations() {
 
   const filtersQuery = useMarketExpectationFilters();
 
-  const selectedCandidateCatalogIds = selectedCandidates.map(Number);
+  const selectedCandidateCatalogIds = selectedCandidates
+    .map(Number)
+    .toSorted((firstId, secondId) => firstId - secondId);
   const marketExpectationsQuery = useMarketExpectations({
     candidateCatalogIds: selectedCandidateCatalogIds.length > 0 ? selectedCandidateCatalogIds : undefined,
     interval: selectedInterval,
