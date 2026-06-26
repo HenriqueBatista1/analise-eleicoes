@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.schemas.market_expectation_filters import MarketExpectationFiltersResponse
+from app.schemas.market_expectation_options import MarketExpectationOptionsResponse
 from app.schemas.market_expectations import MarketExpectationInterval, MarketExpectationsResponse
-from app.services.market_expectation_filters import get_market_expectation_filters
+from app.services.market_expectation_options import get_market_expectation_options
 from app.services.market_expectations import get_market_expectations
 
 
@@ -43,8 +43,8 @@ def read_market_expectations(
 
 
 @router.get(
-    "/market-expectations/filters",
-    response_model=MarketExpectationFiltersResponse,
+    "/market-expectations/options",
+    response_model=MarketExpectationOptionsResponse,
 )
-def read_market_expectation_filters(db: Session = Depends(get_db)):
-    return get_market_expectation_filters(db)
+def read_market_expectation_options(db: Session = Depends(get_db)):
+    return get_market_expectation_options(db)

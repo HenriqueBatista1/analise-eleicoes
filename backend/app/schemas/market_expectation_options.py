@@ -10,12 +10,14 @@ class MarketExpectationDateRange(ApiModel):
     max: datetime | None
 
 
-class MarketExpectationFilterCandidate(ApiModel):
+class MarketExpectationOptionCandidate(ApiModel):
     candidate_catalog_id: int = Field(alias="candidateCatalogId")
     display_name: str = Field(alias="displayName")
+    latest_probability: float | None = Field(alias="latestProbability")
 
 
-class MarketExpectationFiltersResponse(ApiModel):
+class MarketExpectationOptionsResponse(ApiModel):
     date_range: MarketExpectationDateRange = Field(alias="dateRange")
     intervals: list[MarketExpectationInterval]
-    candidates: list[MarketExpectationFilterCandidate]
+    candidates: list[MarketExpectationOptionCandidate]
+    default_candidate_catalog_ids: list[int] = Field(alias="defaultCandidateCatalogIds")

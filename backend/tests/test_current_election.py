@@ -346,8 +346,8 @@ def test_market_expectations_rejects_unsupported_interval(client):
     }
 
 
-def test_market_expectation_filters_returns_empty_values_when_no_data_exists(client):
-    response = client.get("/api/current-election/market-expectations/filters")
+def test_market_expectation_options_returns_empty_values_when_no_data_exists(client):
+    response = client.get("/api/current-election/market-expectations/options")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -357,10 +357,11 @@ def test_market_expectation_filters_returns_empty_values_when_no_data_exists(cli
         },
         "intervals": ["1h", "4h", "1d", "1w"],
         "candidates": [],
+        "defaultCandidateCatalogIds": [],
     }
 
 
-def test_market_expectation_filters_returns_available_filter_values(
+def test_market_expectation_options_returns_available_values(
     client,
     db_session_factory,
 ):
@@ -394,7 +395,7 @@ def test_market_expectation_filters_returns_available_filter_values(
         )
         session.commit()
 
-    response = client.get("/api/current-election/market-expectations/filters")
+    response = client.get("/api/current-election/market-expectations/options")
 
     assert response.status_code == 200
     response_body = response.json()
@@ -403,23 +404,22 @@ def test_market_expectation_filters_returns_available_filter_values(
         "max": "2024-01-03T12:00:00",
     }
     assert response_body["intervals"] == ["1h", "4h", "1d", "1w"]
-    candidates = sorted(
-        response_body["candidates"],
-        key=lambda candidate: candidate["candidateCatalogId"],
-    )
-    assert candidates == [
-        {
-            "candidateCatalogId": 1,
-            "displayName": "Candidate A",
-        },
+    assert response_body["candidates"] == [
         {
             "candidateCatalogId": 2,
             "displayName": "Candidate B",
+            "latestProbability": 0.5,
+        },
+        {
+            "candidateCatalogId": 1,
+            "displayName": "Candidate A",
+            "latestProbability": 0.25,
         },
     ]
+    assert response_body["defaultCandidateCatalogIds"] == [2, 1]
 
 
-def test_market_expectation_filters_ignores_candidates_without_probabilities(
+def test_market_expectation_options_ignores_candidates_without_probabilities(
     client,
     db_session_factory,
 ):
@@ -446,18 +446,19 @@ def test_market_expectation_filters_ignores_candidates_without_probabilities(
         )
         session.commit()
 
-    response = client.get("/api/current-election/market-expectations/filters")
+    response = client.get("/api/current-election/market-expectations/options")
 
     assert response.status_code == 200
     assert response.json()["candidates"] == [
         {
             "candidateCatalogId": 1,
             "displayName": "Candidate A",
+            "latestProbability": 0.25,
         }
     ]
 
 
-def test_market_expectation_filters_does_not_duplicate_candidates(
+def test_market_expectation_options_does_not_duplicate_candidates(
     client,
     db_session_factory,
 ):
@@ -485,12 +486,106 @@ def test_market_expectation_filters_does_not_duplicate_candidates(
         )
         session.commit()
 
-    response = client.get("/api/current-election/market-expectations/filters")
+    response = client.get("/api/current-election/market-expectations/options")
 
     assert response.status_code == 200
     assert response.json()["candidates"] == [
         {
             "candidateCatalogId": 1,
             "displayName": "Candidate A",
+            "latestProbability": 0.5,
         }
     ]
+
+
+def test_market_expectation_options_orders_candidates_by_latest_probability(
+    client,
+    db_session_factory,
+):
+    with db_session_factory() as session:
+        session.add_all(
+            [
+                candidate_catalog(
+                    candidate_id=1,
+                    display_name="Candidate A",
+                    source_key="market-1",
+                ),
+                candidate_catalog(
+                    candidate_id=2,
+                    display_name="Candidate B",
+                    source_key="market-2",
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=1,
+                    candidate_name="Candidate A",
+                    probability=0.90,
+                    timestamp=datetime(2024, 1, 1, 10),
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=1,
+                    candidate_name="Candidate A",
+                    probability=0.20,
+                    timestamp=datetime(2024, 1, 1, 11),
+                ),
+                polymarket_probability(
+                    candidate_catalog_id=2,
+                    candidate_name="Candidate B",
+                    probability=0.50,
+                    timestamp=datetime(2024, 1, 1, 10),
+                    market_id="market-2",
+                ),
+            ]
+        )
+        session.commit()
+
+    response = client.get("/api/current-election/market-expectations/options")
+
+    assert response.status_code == 200
+    response_body = response.json()
+    assert response_body["candidates"] == [
+        {
+            "candidateCatalogId": 2,
+            "displayName": "Candidate B",
+            "latestProbability": 0.5,
+        },
+        {
+            "candidateCatalogId": 1,
+            "displayName": "Candidate A",
+            "latestProbability": 0.2,
+        },
+    ]
+    assert response_body["defaultCandidateCatalogIds"] == [2, 1]
+
+
+def test_market_expectation_options_returns_top_five_default_candidates(
+    client,
+    db_session_factory,
+):
+    with db_session_factory() as session:
+        records = []
+
+        for candidate_id in range(1, 7):
+            records.extend(
+                [
+                    candidate_catalog(
+                        candidate_id=candidate_id,
+                        display_name=f"Candidate {candidate_id}",
+                        source_key=f"market-{candidate_id}",
+                    ),
+                    polymarket_probability(
+                        candidate_catalog_id=candidate_id,
+                        candidate_name=f"Candidate {candidate_id}",
+                        probability=candidate_id * 0.1,
+                        timestamp=datetime(2024, 1, 1, 10),
+                        market_id=f"market-{candidate_id}",
+                    ),
+                ]
+            )
+
+        session.add_all(records)
+        session.commit()
+
+    response = client.get("/api/current-election/market-expectations/options")
+
+    assert response.status_code == 200
+    assert response.json()["defaultCandidateCatalogIds"] == [6, 5, 4, 3, 2]

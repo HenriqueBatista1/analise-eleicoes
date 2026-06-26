@@ -86,22 +86,24 @@ Probability values are returned in their stored analytical range from `0.0` to `
 
 For aggregated intervals, the backend returns the latest real record inside each time bucket. It does not create synthetic points or interpolate missing data.
 
-### Current Election: Market Expectation Filters
+### Current Election: Market Expectation Options
 
 ```text
-GET /api/current-election/market-expectations/filters
+GET /api/current-election/market-expectations/options
 ```
 
-Returns available filter values for the Market Expectations module.
+Returns initial option values for the Market Expectations module.
 
 The response includes:
 
 - `dateRange.min`: earliest available Polymarket timestamp in the database.
 - `dateRange.max`: latest available Polymarket timestamp in the database.
 - `intervals`: supported series intervals.
-- `candidates`: candidate catalog entries with available Polymarket probability records.
+- `candidates`: candidate catalog entries with available Polymarket probability records, ordered by latest probability descending.
+- `candidates[].latestProbability`: latest known Polymarket probability for the candidate.
+- `defaultCandidateCatalogIds`: default candidate catalog identifiers for the initial chart load.
 
-When no Polymarket records exist, `dateRange.min` and `dateRange.max` are returned as `null`, and `candidates` is returned as an empty list.
+When no Polymarket records exist, `dateRange.min` and `dateRange.max` are returned as `null`, and `candidates` and `defaultCandidateCatalogIds` are returned as empty lists.
 
 ## Configuration
 
