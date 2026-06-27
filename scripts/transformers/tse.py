@@ -18,12 +18,12 @@ from constants_tse import (
     INTEREST_COLUMNS_ELECTORATE,
     CSV_ENCODING,
     CSV_SEPARATOR,
+    PARSED_TSE_DIR,
     RAW_DATA_DIR,
 )
 
 
 # Output configuration
-PARSED_TSE_DIR = os.path.join(os.path.dirname(RAW_DATA_DIR), "parsed_tse")
 PARSED_PRESIDENCY_2018_FILENAME = "parsed_presidencia_2018"
 PARSED_PRESIDENCY_2022_FILENAME = "parsed_presidencia_2022"
 PARSED_ELECTORATE_2018_FILENAME = "parsed_eleitorado_2018"
@@ -184,8 +184,8 @@ def run_presidency_transformation() -> bool:
     Orchestrates the complete presidency transformation pipeline.
 
     Processes 2018 and 2022 election data separately, generating:
-    - data/parsed_tse/parsed_presidencia_2018.csv
-    - data/parsed_tse/parsed_presidencia_2022.csv
+    - scripts/data/parsed_tse/parsed_presidencia_2018.csv
+    - scripts/data/parsed_tse/parsed_presidencia_2022.csv
 
     Returns:
         True if all transformations and saves were successful, False otherwise.
@@ -372,8 +372,8 @@ def run_voter_profile_transformation() -> bool:
     Orchestrates the complete voter profile transformation pipeline.
 
     Processes 2018 and 2022 voter profile data separately, generating:
-    - data/parsed_tse/parsed_eleitorado_2018.csv
-    - data/parsed_tse/parsed_eleitorado_2022.csv
+    - scripts/data/parsed_tse/parsed_eleitorado_2018.csv
+    - scripts/data/parsed_tse/parsed_eleitorado_2022.csv
 
     Returns:
         True if all transformations and saves were successful, False otherwise.

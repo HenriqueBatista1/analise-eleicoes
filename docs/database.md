@@ -1,12 +1,14 @@
 # Database Schema & Conventions
 
-This document outlines the database schema, models, performance indices, and deduplication logic implemented in the ingestion pipeline.
+This document outlines the PostgreSQL database schema, models, performance indices, and deduplication logic implemented by database-backed ingestion pipelines.
 
 ---
 
 ## 1. Current Database Model
 
-The application uses SQLAlchemy to persist normalized analytical data to PostgreSQL.
+The application uses SQLAlchemy to persist selected normalized analytical datasets to PostgreSQL.
+
+Some integrations generate local analytical files instead of database tables. TSE historical election outputs are documented in `docs/tse-integration.md`.
 
 ### Table Name: `candidate_catalog`
 
@@ -77,7 +79,5 @@ This should be added only where cross-source modules require it, such as Public 
 
 - **`public_attention_snapshots`**:
   - Columns: candidate catalog reference, `timestamp` (DateTime), `wikipedia_views` (Integer), `trends_index` (Float).
-- **`tse_historical_results`**:
-  - Columns: candidate catalog reference, `election_year` (Integer), `round` (Integer), `state_code` (String), `votes_count` (Integer).
 - **`macroeconomic_indicators`**:
   - Columns: `timestamp` (DateTime), `usd_rate` (Float), `selic_rate` (Float), `ipca_index` (Float), `ibovespa` (Float).

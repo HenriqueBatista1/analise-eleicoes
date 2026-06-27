@@ -26,6 +26,9 @@ Detailed product, frontend, database and integration decisions live in the dedic
 - `docs/polymarket-integration.md`
   Polymarket ETL and integration details.
 
+- `docs/tse-integration.md`
+  TSE historical election CSV integration details.
+
 ## Reading guide
 
 For frontend tasks, read:
@@ -45,6 +48,11 @@ For Polymarket tasks, read:
 - `docs/database.md`
 - `docs/modules.md`
 
+For TSE historical election tasks, read:
+
+- `docs/tse-integration.md`
+- `docs/modules.md`
+
 ## 1. Project Overview
 
 The goal of this project is to build an analytical dashboard that consolidates public expectation, electoral data, public attention, and macroeconomic context for Brazilian Presidential Elections.
@@ -60,7 +68,7 @@ The application helps users answer two main focus questions:
 
 This project is structured as a monorepo containing isolated modules:
 
-- **/scripts**: Contains Python ETL pipelines organized by shared core utilities, extractors, transformers, loaders, pipelines, and database models.
+- **/scripts**: Contains Python ETL pipelines organized by shared core utilities, extractors, transformers, loaders, pipelines, database models, and local file outputs.
 - **/backend**: Contains the FastAPI backend that serves processed analytical data to the frontend.
 - **/frontend**: Contains the Vite React frontend application for the dashboard.
 - **/docs**: Contains documentation schemas, specifications, and guidelines.
@@ -72,7 +80,7 @@ This project is structured as a monorepo containing isolated modules:
 When merging these sources, agents must implement the following data quality rules:
 
 - **Name Standardization**: Normalize candidate names across different sources (e.g., aligning "Luiz Inácio Lula da Silva" vs "Lula" into a unified ID).
-- **Candidate Catalog**: ETL pipelines should register observed source candidates in the candidate catalog when persisting candidate-based facts.
+- **Candidate Catalog**: ETL pipelines should register observed source candidates in the candidate catalog when persisting candidate-based facts to the database. File-based CSV pipelines may keep source-native candidate names when no database persistence is involved.
 - **Temporal Alignment**: Resample daily/high-frequency series (like Polymarket) to a **weekly granularity** when comparing with lower-frequency public interest data (Google Trends).
 - **Date Formats**: Enforce standard ISO `YYYY-MM-DD` formatting across all databases and datasets.
 - **Data Types**: Ensure numerical metrics (like TSE vote counts stored as text strings) are parsed into integer or float columns during ingestion.
@@ -139,5 +147,5 @@ Analytical notifications and visualization logic use the following business thre
 
 - **Polymarket Expectations**: Daily or every 4 hours.
 - **Google Trends & Wikipedia Pageviews**: Weekly batches.
-- **TSE Historical Votes**: Static historical load per election cycle.
+- **TSE Historical Votes**: Static historical load per election cycle, currently generated as local CSV outputs under `scripts/data`.
 - **Macroeconomic Indicators**: Weekly or monthly batches (aligned with indicator releases).

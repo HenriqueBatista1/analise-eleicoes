@@ -38,9 +38,12 @@ CSV_ENCODING = "latin-1"
 CSV_SEPARATOR = ";"
 
 # Local directory setup
-# Uses relative paths so the project works on any team member's machine.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RAW_DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
+# Keeps generated TSE files isolated inside the scripts module.
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(SCRIPTS_DIR, "data")
+RAW_DATA_DIR = os.path.join(DATA_DIR, "raw")
+PARSED_TSE_DIR = os.path.join(DATA_DIR, "parsed_tse")
+TABLES_DIR = os.path.join(DATA_DIR, "tables")
 
 # Columns for transforming and cleaning the data, focusing on the most relevant fields for analysis.
 INTEREST_COLUMNS_PRESIDENCY = [

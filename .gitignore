@@ -40,4 +40,4 @@ dist-ssr/
 Thumbs.db
 
 # Data
-data/*
+scripts/data/*

@@ -24,11 +24,9 @@ from constants_tse import (
     OUTPUT_CSV_VOTOS_CANDIDATOS_TURNO_1_2022,
     OUTPUT_CSV_VOTOS_CANDIDATOS_TURNO_2_2018,
     OUTPUT_CSV_VOTOS_CANDIDATOS_TURNO_2_2022,
-    RAW_DATA_DIR,
+    PARSED_TSE_DIR,
+    TABLES_DIR,
 )
-
-PARSED_TSE_DIR = os.path.join(os.path.dirname(RAW_DATA_DIR), "parsed_tse")
-TABLES_DIR = os.path.join(os.path.dirname(RAW_DATA_DIR), "tables")
 
 
 def load_parsed_presidency_csv(filename: str) -> Optional[pd.DataFrame]:
