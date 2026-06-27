@@ -3,6 +3,7 @@ import sys
 from core.database import create_session
 from pipelines.google_trends import run_google_trends_pipeline
 from pipelines.polymarket import run_polymarket_pipeline
+from pipelines.tse import run_tse_pipeline
 
 
 def main() -> int:
@@ -14,6 +15,12 @@ def main() -> int:
         print(result)
     except Exception as exc:
         print(f"Google Trends pipeline failure: {exc}")
+
+    try:
+        run_tse_pipeline()
+    except Exception as exc:
+        print(f"TSE pipeline failure: {exc}")
+        return 1
 
     print("Initiating connection to PostgreSQL...")
 

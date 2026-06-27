@@ -11,10 +11,20 @@
   --color-foreground: #15212e;
   --color-ink-2: #3a4a5a;
   --color-muted: #5c6b7a;
+  --color-negative: #b91c1c;
+  --color-positive: #047857;
 
   /* Lines */
   --color-border: #d2dae3;
   --color-line-strong: #b9c4d0;
+
+  /* Charts */
+  --color-chart-1: #2563eb;
+  --color-chart-2: #db2777;
+  --color-chart-3: #16a34a;
+  --color-chart-4: #9333ea;
+  --color-chart-5: #ea580c;
+  --color-chart-6: #0891b2;
 
   /* Dual-signal accents: market = indigo, attention = magenta */
   --color-accent: #2a3fc4;

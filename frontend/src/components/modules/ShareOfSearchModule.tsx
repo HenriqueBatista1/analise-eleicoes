@@ -164,7 +164,7 @@ export default function ShareOfSearchModule({ electionYear }: ShareOfSearchModul
         )}
 
         <div className="gap-3 grid">
-          <MetricCard label="Concentração Top 2" value={`${concentration.toFixed(0)}% · ${concentrationLabel}`} />
+          <MetricCard title="Concentração Top 2" value={`${concentration.toFixed(0)}% · ${concentrationLabel}`} />
         </div>
 
         <p className="font-mono text-[11px] text-muted">

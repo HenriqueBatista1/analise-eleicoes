@@ -144,9 +144,9 @@ export default function PublicAttentionModule({ electionYear }: PublicAttentionM
         )}
 
         <div className="gap-3 grid sm:grid-cols-2">
-          <MetricCard label="Maior atenção" value={topAttention} />
+          <MetricCard text={topAttention} title="Maior atenção" />
 
-          <MetricCard label="Maior pico" value={peak ? `${peak.term} · ${Math.round(peak.value)}` : '—'} />
+          <MetricCard text={peak ? `${peak.term} · ${Math.round(peak.value)}` : '—'} title="Maior pico" />
         </div>
 
         <div className="flex flex-col gap-1">

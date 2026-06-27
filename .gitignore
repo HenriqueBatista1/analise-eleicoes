@@ -48,3 +48,6 @@ dados-processados/
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Data
+scripts/data/*
