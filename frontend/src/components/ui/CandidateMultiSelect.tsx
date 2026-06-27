@@ -30,7 +30,7 @@ export default function CandidateMultiSelect({ label, options, selected, onChang
             <button
               aria-pressed={isActive}
               className={cn(
-                'border-border font-mono rounded-sm border px-2.5 py-1 text-xs transition-colors',
+                'border-border cursor-pointer font-mono rounded-sm border px-2.5 py-1 text-xs transition-colors',
                 isActive ? 'bg-foreground text-surface' : 'bg-surface text-muted hover:bg-navigation',
               )}
               key={option}

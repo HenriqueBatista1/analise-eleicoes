@@ -15,7 +15,7 @@ Google Sheets, lida pelo navegador via export CSV público
 - `VITE_GOOGLE_SHEETS_ID` definido em `frontend/.env` (veja `frontend/.env.example`).
 
 O fetch e o parse ficam em `src/services/sheets.ts` e `src/services/googleTrends.ts`;
-o cache em `src/hooks/useGoogleTrends.ts` (TanStack Query).
+o cache em `src/fetchers/hooks/useGoogleTrends.ts` (TanStack Query).
 
 ## `interest_raw` × `interest_scaled`
 

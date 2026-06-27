@@ -11,7 +11,7 @@ import {
   SourceBadge,
 } from '~/components/ui';
 import { activePresetKey, periodsForYear } from '~/data/electionPeriods';
-import { useGoogleTrends } from '~/hooks/useGoogleTrends';
+import { useGoogleTrends } from '~/fetchers/hooks/useGoogleTrends';
 import type { ElectionYear, TrendsMetric } from '~/services/googleTrends';
 import {
   classifyConcentration,
@@ -94,8 +94,6 @@ export default function ShareOfSearchModule({ electionYear }: ShareOfSearchModul
       <div className="flex h-full flex-col gap-5">
         <ModuleHeader
           badges={<SourceBadge label="Google Trends" tone="attention" />}
-          description="Como a atenção se reparte entre os candidatos no período."
-          eyebrow="Distribuição"
           title="Share of Search"
         />
 
@@ -121,7 +119,7 @@ export default function ShareOfSearchModule({ electionYear }: ShareOfSearchModul
 
             <div className="flex items-center gap-2">
               <input
-                className="bg-surface border-border h-9 rounded-md border px-2 font-mono text-foreground text-xs"
+                className="bg-surface border-border h-9 cursor-pointer rounded-md border px-2 font-mono text-foreground text-xs"
                 max={endDate}
                 min={extent.start}
                 onChange={(event) => setRange({ ...range, start: event.target.value })}
@@ -132,7 +130,7 @@ export default function ShareOfSearchModule({ electionYear }: ShareOfSearchModul
               <span className="text-muted text-xs">até</span>
 
               <input
-                className="bg-surface border-border h-9 rounded-md border px-2 font-mono text-foreground text-xs"
+                className="bg-surface border-border h-9 cursor-pointer rounded-md border px-2 font-mono text-foreground text-xs"
                 max={extent.end}
                 min={startDate}
                 onChange={(event) => setRange({ ...range, end: event.target.value })}

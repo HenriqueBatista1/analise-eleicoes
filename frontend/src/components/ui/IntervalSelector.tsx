@@ -31,10 +31,11 @@ export default function IntervalSelector({
           return (
             <button
               className={cn(
-                'rounded px-2.5 py-1.5 text-sm transition-colors whitespace-nowrap',
-                isSelected ? 'bg-surface shadow-sm text-foreground' : 'text-muted',
+                'font-mono px-3 py-1.5 text-xs uppercase tracking-wide whitespace-nowrap transition-colors',
+                index > 0 && 'border-border border-l',
+                isSelected ? 'bg-foreground text-surface' : 'text-muted',
                 !disabled && 'cursor-pointer',
-                !disabled && !isSelected && 'hover:text-foreground',
+                !disabled && !isSelected && 'hover:bg-navigation',
                 'disabled:cursor-not-allowed disabled:opacity-60',
               )}
               disabled={disabled}

@@ -45,7 +45,7 @@ export default function AppLayout() {
                 <NavLink
                   className={({ isActive }) =>
                     cn(
-                      'font-mono px-4 py-2.5 text-xs uppercase tracking-wide transition-colors',
+                      'cursor-pointer font-mono px-4 py-2.5 text-xs uppercase tracking-wide transition-colors',
                       index > 0 && 'border-border border-l',
                       isActive ? 'bg-foreground text-surface' : 'text-muted hover:bg-navigation',
                     )

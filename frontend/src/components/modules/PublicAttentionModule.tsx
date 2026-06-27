@@ -12,7 +12,7 @@ import {
 } from '~/components/ui';
 import { EVENTS_DISCLAIMER_2026 } from '~/data/electionEvents';
 import { activePresetKey, periodsForYear } from '~/data/electionPeriods';
-import { useGoogleTrends } from '~/hooks/useGoogleTrends';
+import { useGoogleTrends } from '~/fetchers/hooks/useGoogleTrends';
 import type { ElectionYear, TrendsMetric } from '~/services/googleTrends';
 import { cn } from '~/utils/cn';
 import {
@@ -30,6 +30,8 @@ const metricOptions = [
   { label: 'Reescalado', value: 'interestScaled' },
   { label: 'Bruto', value: 'interestRaw' },
 ];
+
+const EMPTY_RANGE: DateRange = {};
 
 type PublicAttentionModuleProps = {
   electionYear: ElectionYear;
@@ -50,7 +52,7 @@ export default function PublicAttentionModule({ electionYear }: PublicAttentionM
 
   const yearRows = useMemo(() => filterByYear(data ?? [], electionYear), [data, electionYear]);
   const presets = periodsForYear(electionYear);
-  const range = rangeState.year === electionYear ? rangeState.range : {};
+  const range = rangeState.year === electionYear ? rangeState.range : EMPTY_RANGE;
   const rows = useMemo(() => filterByRange(yearRows, range), [yearRows, range]);
 
   const orderedTerms = useMemo(() => termsByMean(rows, metric), [rows, metric]);
@@ -81,8 +83,6 @@ export default function PublicAttentionModule({ electionYear }: PublicAttentionM
       <div className="flex flex-col gap-5">
         <ModuleHeader
           badges={<SourceBadge label="Google Trends" tone="attention" />}
-          description="Interesse de busca por candidato ao longo do tempo."
-          eyebrow="Sinal de atenção"
           title="Atenção pública"
         />
 
@@ -116,7 +116,7 @@ export default function PublicAttentionModule({ electionYear }: PublicAttentionM
             <button
               aria-pressed={showEvents}
               className={cn(
-                'border-line-strong font-mono rounded-md border px-3 py-1.5 text-xs uppercase tracking-wide transition-colors',
+                'border-line-strong cursor-pointer font-mono rounded-md border px-3 py-1.5 text-xs uppercase tracking-wide transition-colors',
                 showEvents ? 'bg-foreground text-surface' : 'bg-surface text-muted hover:bg-navigation',
               )}
               onClick={() => setShowEvents((value) => !value)}

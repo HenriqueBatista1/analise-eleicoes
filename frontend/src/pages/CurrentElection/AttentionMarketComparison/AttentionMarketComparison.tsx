@@ -11,8 +11,6 @@ export default function AttentionMarketComparison() {
               <SourceBadge label="Polymarket" tone="market" />
             </>
           }
-          description="Cada ponto é um candidato: share of search no eixo X, probabilidade de mercado no eixo Y."
-          eyebrow="Síntese"
           title="Atenção pública × expectativa de mercado"
         />
 

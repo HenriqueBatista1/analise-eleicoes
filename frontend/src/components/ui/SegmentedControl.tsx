@@ -24,7 +24,7 @@ export default function SegmentedControl({ label, onChange, options, value }: Se
           return (
             <button
               className={cn(
-                'font-mono px-3 py-1.5 text-xs uppercase tracking-wide whitespace-nowrap transition-colors',
+                'cursor-pointer font-mono px-3 py-1.5 text-xs uppercase tracking-wide whitespace-nowrap transition-colors',
                 index > 0 && 'border-border border-l',
                 isSelected ? 'bg-foreground text-surface' : 'text-muted hover:bg-navigation',
               )}
