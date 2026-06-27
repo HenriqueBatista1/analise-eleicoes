@@ -9,7 +9,6 @@ export default function AttentionMarketComparison() {
           badges={
             <>
               <SourceBadge label="Google Trends" tone="attention" />
-              <SourceBadge label="Wikipedia" tone="attention" />
               <SourceBadge label="Polymarket" tone="market" />
             </>
           }

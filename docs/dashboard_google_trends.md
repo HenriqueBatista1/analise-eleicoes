@@ -91,4 +91,3 @@ selecionados estão no **mesmo lote** (ex.: Lula e Bolsonaro em 2022, ambos no
   não são válidas.
 - Termos de busca casam strings (ex.: usamos `Lula`, não "Luiz Inácio Lula da Silva").
 - Pontos `is_partial` representam períodos incompletos e podem mudar em coletas futuras.
-- Wikipedia Pageviews ainda não está integrada; a Atenção Pública usa apenas Google Trends.

@@ -130,7 +130,6 @@ Relevant events are represented as vertical markers on the time axis.
 ### Sources
 
 - Google Trends
-- Wikipedia Pageviews
 
 ## Share of Search
 
@@ -199,7 +198,6 @@ Each point represents a candidate in the selected period. The horizontal axis sh
 ### Sources
 
 - Google Trends
-- Wikipedia Pageviews
 - Polymarket
 
 ## Historical Elections dashboard

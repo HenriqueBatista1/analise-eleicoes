@@ -127,6 +127,6 @@ Analytical notifications and visualization logic use the following business thre
 ### Data Ingestion Frequencies
 
 - **Polymarket Expectations**: Daily or every 4 hours.
-- **Google Trends & Wikipedia Pageviews**: Weekly batches.
+- **Google Trends**: Weekly batches.
 - **TSE Historical Votes**: Static historical load per election cycle.
 - **Macroeconomic Indicators**: Weekly or monthly batches (aligned with indicator releases).

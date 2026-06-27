@@ -49,7 +49,7 @@ To support the other data modules outlined in the project blueprint (`AGENTS.md`
 
 ### A. Candidate Mapping (Unified Catalog)
 
-To avoid string mismatch issues when merging TSE, Polymarket, Wikipedia, and Google Trends:
+To avoid string mismatch issues when merging TSE, Polymarket, and Google Trends:
 
 - Create a central `candidates` catalog table:
   - `id` (Primary Key)
@@ -62,7 +62,7 @@ To avoid string mismatch issues when merging TSE, Polymarket, Wikipedia, and Goo
 ### B. Mapped Tables for Upcoming Modules
 
 - **`public_attention_snapshots`**:
-  - Columns: `candidate_id` (FK), `timestamp` (DateTime), `wikipedia_views` (Integer), `trends_index` (Float).
+  - Columns: `candidate_id` (FK), `timestamp` (DateTime), `trends_index` (Float).
 - **`tse_historical_results`**:
   - Columns: `candidate_id` (FK), `election_year` (Integer), `round` (Integer), `state_code` (String), `votes_count` (Integer).
 - **`macroeconomic_indicators`**:

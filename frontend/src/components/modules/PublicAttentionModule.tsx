@@ -80,12 +80,7 @@ export default function PublicAttentionModule({ electionYear }: PublicAttentionM
     <ModulePanel>
       <div className="flex flex-col gap-5">
         <ModuleHeader
-          badges={
-            <>
-              <SourceBadge label="Google Trends" tone="attention" />
-              <SourceBadge label="Wikipedia" tone="attention" />
-            </>
-          }
+          badges={<SourceBadge label="Google Trends" tone="attention" />}
           description="Interesse de busca por candidato ao longo do tempo."
           eyebrow="Sinal de atenção"
           title="Atenção pública"

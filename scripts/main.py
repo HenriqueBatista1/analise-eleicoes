@@ -6,6 +6,15 @@ from pipelines.polymarket import run_polymarket_pipeline
 
 
 def main() -> int:
+    # Google Trends is database-independent and publishes straight to Google
+    # Sheets. A failure here must not break the rest of the execution, so it is
+    # isolated before the PostgreSQL-dependent pipelines.
+    try:
+        result = run_google_trends_pipeline()
+        print(result)
+    except Exception as exc:
+        print(f"Google Trends pipeline failure: {exc}")
+
     print("Initiating connection to PostgreSQL...")
 
     try:
@@ -22,15 +31,6 @@ def main() -> int:
         return 1
     finally:
         session.close()
-
-    # Google Trends is database-independent and publishes straight to Google
-    # Sheets. A failure here must not break the rest of the execution, so it is
-    # isolated in its own block.
-    try:
-        result = run_google_trends_pipeline()
-        print(result)
-    except Exception as exc:
-        print(f"Google Trends pipeline failure: {exc}")
 
     return 0
 
