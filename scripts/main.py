@@ -2,9 +2,16 @@ import sys
 
 from core.database import create_session
 from pipelines.polymarket import run_polymarket_pipeline
+from pipelines.tse import run_tse_pipeline
 
 
 def main() -> int:
+    try:
+        run_tse_pipeline()
+    except Exception as exc:
+        print(f"TSE pipeline failure: {exc}")
+        return 1
+
     print("Initiating connection to PostgreSQL...")
 
     try:

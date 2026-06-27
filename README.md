@@ -102,7 +102,7 @@ Mais detalhes estão em `backend/README.md` e `docs/backend.md`.
 
 Os scripts concentram os pipelines de extração, transformação e carga (ETL) do projeto.
 
-Os dados processados são persistidos no PostgreSQL para consumo posterior pelo backend e pelo frontend.
+Os pipelines podem persistir dados no PostgreSQL ou gerar arquivos locais, de acordo com a natureza de cada integração.
 
 ### Pré-requisitos
 
@@ -137,6 +137,8 @@ Com o ambiente virtual ativo e dentro da pasta `scripts`, execute:
 ```bash
 python main.py
 ```
+
+Mais detalhes sobre integrações específicas estão em `docs/polymarket-integration.md` e `docs/tse-integration.md`.
 
 ### Executando os Testes dos Scripts
 
