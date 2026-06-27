@@ -91,7 +91,7 @@ service account (somente leitura).
 
 - Total: **1973** linhas.
 - Por ano: **2018 → 742 · 2022 → 583 · current → 648**.
-- Por termo/ano: `docs/auditoria_outputs/linhas_por_termo_ano.csv` (53 linhas por termo
+- Por termo/ano: `scripts/audit_outputs/linhas_por_termo_ano.csv` (53 linhas por termo
   em cada ano = 53 semanas; consistente).
 
 **Nulos e valores fora de escala** (`nulls_and_invalid_values.csv`): **zero** em todas
@@ -104,7 +104,7 @@ as checagens — `null_date`, `null_election_year`, `null_term`, `null_interest_
 ## 3. Auditoria de duplicatas e termo-âncora
 
 Chave `election_year + date + term`: **0 chaves duplicadas**
-(`docs/auditoria_outputs/duplicatas_por_termo.csv` está vazio).
+(`scripts/audit_outputs/duplicatas_por_termo.csv` está vazio).
 
 - **Top termos duplicados:** nenhum.
 - **Duplicatas por ano:** nenhuma.
@@ -121,7 +121,7 @@ origem.
 
 ## 4. Auditoria do termo-âncora e uso no dashboard
 
-`docs/auditoria_outputs/anchor_usage_by_year.csv`:
+`scripts/audit_outputs/anchor_usage_by_year.csv`:
 
 | Ano | Âncora configurada | Termos com `is_anchor=true` | Só a âncora certa marcada? | Batches da âncora no processado | Datas com âncora duplicada |
 | --- | --- | --- | --- | --- | --- |
@@ -291,7 +291,7 @@ share(candidato) = média_interesse(candidato) / Σ médias dos candidatos selec
 Criados (somente leitura, não alteram dados originais):
 
 - **`scripts/audit_google_trends_import.py`** — lê a aba `proc_*` direto do Google
-  Sheets e gera, em `docs/auditoria_outputs/`:
+  Sheets e gera, em `scripts/audit_outputs/`:
   `duplicatas_por_termo.csv`, `linhas_por_termo_ano.csv`, `batches_por_termo.csv`,
   `share_2022_atual_vs_deduplicado.csv`, `anchor_usage_by_year.csv`,
   `nulls_and_invalid_values.csv`. Resumo também impresso no terminal.

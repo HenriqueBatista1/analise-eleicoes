@@ -12,7 +12,7 @@ than the surname, which deflated Bolsonaro's Share of Search.
 
 It does **not** touch the dashboard data, the spreadsheet or ``constants.py`` —
 it only queries Google Trends and writes one summary CSV under
-``docs/auditoria_outputs/``.
+``scripts/audit_outputs/``.
 
 Run from the ``scripts/`` directory:
 
@@ -33,7 +33,7 @@ from extractors.google_trends import fetch_interest_over_time_batch
 
 TERMS = ["Lula", "Bolsonaro", "Jair Bolsonaro"]
 TIMEFRAME = "2022-08-01 2022-10-31"
-OUTPUT_DIR = PROJECT_ROOT / "docs" / "auditoria_outputs"
+OUTPUT_DIR = PROJECT_ROOT / "scripts" / "audit_outputs"
 OUTPUT_NAME = "term_comparison_bolsonaro.csv"
 
 

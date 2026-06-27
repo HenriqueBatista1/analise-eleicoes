@@ -4,7 +4,7 @@ Google Sheets.
 
 It reads the consolidated processed tab straight from the spreadsheet (using the
 same service-account client the pipeline uses), runs a set of consistency checks
-and writes summary CSVs under ``docs/auditoria_outputs/``. It **never** mutates
+and writes summary CSVs under ``scripts/audit_outputs/``. It **never** mutates
 the spreadsheet, the source data or any pipeline artifact — it is strictly
 read-only.
 
@@ -24,7 +24,7 @@ from constants import GOOGLE_TRENDS_ELECTION_GROUPS, PROJECT_ROOT
 from core.sheets import get_spreadsheet
 
 PROCESSED_TAB = "proc_google_trends_all_elections_interest_long"
-OUTPUT_DIR = PROJECT_ROOT / "docs" / "auditoria_outputs"
+OUTPUT_DIR = PROJECT_ROOT / "scripts" / "audit_outputs"
 
 EXPECTED_COLUMNS = [
     "date",
@@ -278,7 +278,7 @@ def main() -> int:
     audit_nulls_and_invalid(df)
     audit_share_2022(df)
 
-    print("\nAudit complete. Outputs in docs/auditoria_outputs/. No data was modified.")
+    print("\nAudit complete. Outputs in scripts/audit_outputs/. No data was modified.")
     return 0
 
 

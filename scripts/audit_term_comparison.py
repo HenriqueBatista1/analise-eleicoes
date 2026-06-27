@@ -10,7 +10,7 @@ more common form (but the surname may also capture homonyms, so always check).
 
 It does **not** touch the dashboard data, the spreadsheet or ``constants.py`` —
 it only queries Google Trends and writes one summary CSV under
-``docs/auditoria_outputs/``.
+``scripts/audit_outputs/``.
 
 Run from the ``scripts/`` directory. Examples:
 
@@ -37,7 +37,7 @@ from extractors.google_trends import fetch_interest_over_time_batch
 
 DEFAULT_TERMS = ["Lula", "Bolsonaro", "Jair Bolsonaro"]
 DEFAULT_TIMEFRAME = "2022-08-01 2022-10-31"
-OUTPUT_DIR = PROJECT_ROOT / "docs" / "auditoria_outputs"
+OUTPUT_DIR = PROJECT_ROOT / "scripts" / "audit_outputs"
 
 
 def parse_args(argv) -> argparse.Namespace:
