@@ -98,8 +98,13 @@ def clean_presidency_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(subset=[col for col in critical_columns if col in df.columns])
 
     # Strip whitespace from string columns
-    for col in df.select_dtypes(include=["object"]).columns:
-        df[col] = df[col].str.strip()
+    string_columns = [
+        col
+        for col in df.columns
+        if pd.api.types.is_object_dtype(df[col]) or pd.api.types.is_string_dtype(df[col])
+    ]
+    for col in string_columns:
+        df[col] = df[col].astype("string").str.strip()
 
     # Remove duplicate rows (if any)
     df = df.drop_duplicates()
@@ -285,8 +290,13 @@ def clean_voter_profile_data(df: pd.DataFrame) -> pd.DataFrame:
     ]
     df = df.dropna(subset=[col for col in critical_columns if col in df.columns])
 
-    for col in df.select_dtypes(include=["object"]).columns:
-        df[col] = df[col].str.strip()
+    string_columns = [
+        col
+        for col in df.columns
+        if pd.api.types.is_object_dtype(df[col]) or pd.api.types.is_string_dtype(df[col])
+    ]
+    for col in string_columns:
+        df[col] = df[col].astype("string").str.strip()
 
     df = df.drop_duplicates()
 
