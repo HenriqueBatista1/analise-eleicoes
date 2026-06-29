@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react';
 
 import AttentionTimelineChart from '~/components/charts/AttentionTimelineChart';
 import {
-  CandidateMultiSelect,
   MetricCard,
   ModuleHeader,
   ModulePanel,
+  MultiSelect,
   PlaceholderChart,
   SegmentedControl,
   SourceBadge,
@@ -38,6 +38,7 @@ const metricOptions = [
 ];
 
 const EMPTY_RANGE: DateRange = {};
+const INITIAL_SELECTED_CANDIDATE_LIMIT = 4;
 
 export default function PublicAttention() {
   const { data, isLoading, isError } = useGoogleTrends();
@@ -59,15 +60,20 @@ export default function PublicAttention() {
   const rows = useMemo(() => filterByRange(yearRows, range), [yearRows, range]);
 
   const orderedTerms = useMemo(() => termsByMean(rows, metric), [rows, metric]);
-  const defaultSelection = useMemo(() => topCandidatesByMean(rows, metric, 4), [rows, metric]);
-  const selected = selection.year === electionYear ? selection.terms : defaultSelection;
+  const candidateOptions = orderedTerms.map((term) => ({ label: term, value: term }));
+  const initialSelection = useMemo(
+    () => topCandidatesByMean(rows, metric, INITIAL_SELECTED_CANDIDATE_LIMIT),
+    [rows, metric],
+  );
+  const selectedValues = selection.year === electionYear ? selection.terms : initialSelection;
+  const selectedTerms = selectedValues.length > 0 ? selectedValues : orderedTerms;
 
-  const topAttention = orderedTerms.find((term) => selected.includes(term)) ?? '—';
+  const topAttention = orderedTerms.find((term) => selectedTerms.includes(term)) ?? '—';
   const peak = useMemo(() => {
-    const timeline = buildTimeline(rows, selected, metric);
+    const timeline = buildTimeline(rows, selectedTerms, metric);
 
-    return highestPeak(detectPeaks(timeline, selected, electionYear));
-  }, [rows, selected, metric, electionYear]);
+    return highestPeak(detectPeaks(timeline, selectedTerms, electionYear));
+  }, [rows, selectedTerms, metric, electionYear]);
 
   function handleSelectionChange(terms: string[]) {
     setSelection({ terms, year: electionYear });
@@ -94,11 +100,11 @@ export default function PublicAttention() {
             value={electionYear}
           />
 
-          <CandidateMultiSelect
+          <MultiSelect
             label="Candidatos"
             onChange={handleSelectionChange}
-            options={orderedTerms}
-            selected={selected}
+            options={candidateOptions}
+            value={selectedValues}
           />
 
           <SegmentedControl
@@ -138,14 +144,14 @@ export default function PublicAttention() {
           <PlaceholderChart label="Carregando dados do Google Trends…" />
         ) : isError ? (
           <PlaceholderChart label="Falha ao carregar os dados. Verifique a planilha e o VITE_GOOGLE_SHEETS_ID." />
-        ) : selected.length === 0 || rows.length === 0 ? (
+        ) : rows.length === 0 || selectedTerms.length === 0 ? (
           <PlaceholderChart label="Selecione ao menos um candidato com dados no período." />
         ) : (
           <AttentionTimelineChart
             metric={metric}
             rows={rows}
             showEvents={showEvents}
-            terms={selected}
+            terms={selectedTerms}
             year={electionYear}
           />
         )}
