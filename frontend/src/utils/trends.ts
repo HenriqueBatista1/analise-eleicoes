@@ -179,9 +179,7 @@ export function shareOfSearch(
   metric: TrendsMetric,
   range: DateRange = {},
 ): CandidateShare[] {
-  const scoped = rows.filter(
-    (row) => terms.includes(row.term) && !row.isPartial && isWithinRange(row.date, range),
-  );
+  const scoped = rows.filter((row) => terms.includes(row.term) && !row.isPartial && isWithinRange(row.date, range));
   const means = terms.map((term) => ({ term, mean: meanInterest(scoped, term, metric) }));
   const total = means.reduce((sum, entry) => sum + entry.mean, 0);
 
