@@ -8,20 +8,13 @@ The frontend stack, routing and implementation conventions are documented in `do
 
 ## Interface structure
 
-The application is organized into two main analytical dashboards.
+The application is organized into one main analytical dashboard.
 
-```text
-/current-election
-/historical-elections
-```
+## Dashboard
 
-## Current Election dashboard
+The dashboard brings together public attention, market expectations and the relationship between both.
 
-The Current Election dashboard focuses on the ongoing presidential election.
-
-It brings together public attention, market expectations and the relationship between both.
-
-Modules in this dashboard:
+Modules in the dashboard:
 
 - Market Expectations
 - Public Attention
@@ -58,7 +51,7 @@ Do not represent the date range as a standalone period filter outside the chart.
 
 ## Market Expectations
 
-Market Expectations is the main module of the Current Election dashboard.
+Market Expectations is the main module of the dashboard.
 
 It shows the evolution of market probabilities for candidates in the current presidential election.
 
@@ -114,6 +107,7 @@ Time series line chart.
 
 ### Controls
 
+- Election year
 - Candidates
 
 ### Interaction
@@ -149,11 +143,12 @@ This module should represent Share of Search as a proportional distribution, not
 
 ### Controls
 
+- Election year
 - Candidates
 
 ### Interaction
 
-The selected date range should come from the dashboard or related chart context when implemented.
+The selected date range is controlled inside the module.
 
 ### Source
 
@@ -196,19 +191,6 @@ Each point represents a candidate in the selected period. The horizontal axis sh
 
 - Google Trends
 - Polymarket
-
-## Historical Elections dashboard
-
-The Historical Elections dashboard focuses on past Brazilian presidential elections.
-
-It brings together official results, geographic distribution, comparisons between rounds and complementary indicators.
-
-Modules in this dashboard:
-
-- Candidate Totals
-- Runoff Difference
-- Electoral Map
-- Complementary Indicators
 
 ## Candidate Totals
 

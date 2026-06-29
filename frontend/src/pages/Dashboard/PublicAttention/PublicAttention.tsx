@@ -26,6 +26,12 @@ import {
   type DateRange,
 } from '~/utils/trends';
 
+const yearOptions = [
+  { label: '2018', value: '2018' },
+  { label: '2022', value: '2022' },
+  { label: '2026', value: 'current' },
+];
+
 const metricOptions = [
   { label: 'Reescalado', value: 'interestScaled' },
   { label: 'Bruto', value: 'interestRaw' },
@@ -33,12 +39,9 @@ const metricOptions = [
 
 const EMPTY_RANGE: DateRange = {};
 
-type PublicAttentionModuleProps = {
-  electionYear: ElectionYear;
-};
-
-export default function PublicAttentionModule({ electionYear }: PublicAttentionModuleProps) {
+export default function PublicAttention() {
   const { data, isLoading, isError } = useGoogleTrends();
+  const [electionYear, setElectionYear] = useState<ElectionYear>('current');
   const [metric, setMetric] = useState<TrendsMetric>('interestScaled');
   const [showEvents, setShowEvents] = useState(true);
   const [selection, setSelection] = useState<{ terms: string[]; year: ElectionYear | null }>({
@@ -81,12 +84,16 @@ export default function PublicAttentionModule({ electionYear }: PublicAttentionM
   return (
     <ModulePanel>
       <div className="flex flex-col gap-5">
-        <ModuleHeader
-          badges={<SourceBadge label="Google Trends" tone="attention" />}
-          title="Atenção pública"
-        />
+        <ModuleHeader badges={<SourceBadge label="Google Trends" tone="attention" />} title="Atenção pública" />
 
         <div className="flex flex-wrap items-end gap-4">
+          <SegmentedControl
+            label="Eleição"
+            onChange={(value) => setElectionYear(value as ElectionYear)}
+            options={yearOptions}
+            value={electionYear}
+          />
+
           <CandidateMultiSelect
             label="Candidatos"
             onChange={handleSelectionChange}

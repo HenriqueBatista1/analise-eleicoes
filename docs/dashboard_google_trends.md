@@ -1,9 +1,8 @@
-# Dashboards de Google Trends (Atenção Pública e Share of Search)
+# Módulos de Google Trends (Atenção Pública e Share of Search)
 
-Este documento descreve os dois dashboards baseados em Google Trends no frontend:
+Este documento descreve os dois módulos baseados em Google Trends no frontend:
 **Atenção Pública** (série temporal) e **Share of Search** (distribuição). Eles aparecem
-em `/current-election` (ano `current`) e em `/historical-elections` (2018 e 2022),
-respeitando a divisão de rotas definida em `docs/frontend.md`.
+no dashboard principal em `/`, com seleção própria de ano em cada módulo.
 
 ## Fonte de dados
 
@@ -26,7 +25,7 @@ o cache em `src/fetchers/hooks/useGoogleTrends.ts` (TanStack Query).
   diferentes. É **nulo** quando o âncora vale 0 na data (não inventamos valor).
 
 O índice é **relativo e reescalado**. **Nunca** comparar valores entre anos diferentes —
-são janelas temporais independentes, com escalas não equivalentes. Os dashboards usam
+são janelas temporais independentes, com escalas não equivalentes. Os módulos usam
 `interest_scaled` por padrão e oferecem alternância para `interest_raw`.
 
 ## Eventos são hipóteses, não causalidade
@@ -62,9 +61,8 @@ share(candidato) = média de interesse do candidato / soma das médias de todos 
 
 Usamos **média** (não soma) porque o índice já é relativo e os períodos podem ter
 tamanhos diferentes (`src/utils/trends.ts`, `shareOfSearch`). O período é um filtro
-próprio do módulo (decisão de produto que diverge de `docs/frontend-modules.md:57`,
-que sugere derivar o intervalo do Brush do gráfico). O cálculo **ignora pontos
-`is_partial`** (relevante só para o ano `current`).
+próprio do módulo. O cálculo **ignora pontos `is_partial`** (relevante só para o ano
+`current`).
 
 O Dash 3 usa `interest_scaled` por padrão e oferece **alternância para `interest_raw`**
 (igual ao Dash 1). O modo `interest_raw` serve de **auditoria** quando os candidatos

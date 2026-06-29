@@ -33,9 +33,11 @@ function formatFullDate(date?: string): string {
   return `${day}/${month}/${year}`;
 }
 
-type ShareOfSearchModuleProps = {
-  electionYear: ElectionYear;
-};
+const yearOptions = [
+  { label: '2018', value: '2018' },
+  { label: '2022', value: '2022' },
+  { label: '2026', value: 'current' },
+];
 
 // Default to the anchor-rescaled metric. The raw toggle is an audit aid: for
 // candidates collected in the same batch (e.g. Lula and Bolsonaro, both in
@@ -45,8 +47,9 @@ const metricOptions = [
   { label: 'Bruto', value: 'interestRaw' },
 ];
 
-export default function ShareOfSearchModule({ electionYear }: ShareOfSearchModuleProps) {
+export default function ShareOfSearch() {
   const { data, isLoading, isError } = useGoogleTrends();
+  const [electionYear, setElectionYear] = useState<ElectionYear>('current');
   const [metric, setMetric] = useState<TrendsMetric>('interestScaled');
   const [selection, setSelection] = useState<{ terms: string[]; year: ElectionYear | null }>({
     terms: [],
@@ -92,12 +95,16 @@ export default function ShareOfSearchModule({ electionYear }: ShareOfSearchModul
   return (
     <ModulePanel>
       <div className="flex h-full flex-col gap-5">
-        <ModuleHeader
-          badges={<SourceBadge label="Google Trends" tone="attention" />}
-          title="Share of Search"
-        />
+        <ModuleHeader badges={<SourceBadge label="Google Trends" tone="attention" />} title="Share of Search" />
 
         <div className="flex flex-wrap items-end gap-4">
+          <SegmentedControl
+            label="Eleição"
+            onChange={(value) => setElectionYear(value as ElectionYear)}
+            options={yearOptions}
+            value={electionYear}
+          />
+
           <SegmentedControl
             label="Índice"
             onChange={(value) => setMetric(value as TrendsMetric)}
