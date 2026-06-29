@@ -24,7 +24,7 @@ const CURRENT_ELECTION_EVENT_DATE_FORMATTER = new Intl.DateTimeFormat('pt-BR', {
 
 export default function MarketExpectations() {
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>();
-  const [selectedInterval, setSelectedInterval] = useState<MarketExpectationInterval>('1h');
+  const [selectedInterval, setSelectedInterval] = useState<MarketExpectationInterval>('1d');
 
   const optionsQuery = useMarketExpectationOptions();
 
