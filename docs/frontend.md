@@ -29,29 +29,17 @@ Node 22.12 or newer is supported by Vite 8.
 
 The frontend is a single-page application.
 
-The application has two main dashboard routes:
-
-```text
-/current-election
-/historical-elections
-```
+The application has one main dashboard route.
 
 ## Dashboards
 
-The application is organized around two main dashboards:
-
-- Current Election
-- Historical Elections
-
-The Current Election dashboard focuses on the ongoing presidential election.
-
-The Historical Elections dashboard focuses on past Brazilian presidential elections.
+The application is organized around a single analytical dashboard.
 
 ## Interface architecture
 
 The frontend follows a dashboard-style interface.
 
-Each dashboard is composed of analytical modules.
+The dashboard is composed of analytical modules.
 
 Analytical modules own their internal interface structure because each analysis has its own visual purpose, controls and interaction model.
 
@@ -63,17 +51,16 @@ Pages are organized by context:
 
 ```text
 src/pages/
-  CurrentElection/
-    CurrentElection.tsx
+  Dashboard/
+    Dashboard.tsx
     MarketExpectations/
       MarketExpectations.tsx
       MarketExpectationsChart.tsx
     PublicAttention/
+      PublicAttention.tsx
     ShareOfSearch/
+      ShareOfSearch.tsx
     AttentionMarketComparison/
-
-  HistoricalElections/
-    HistoricalElections.tsx
 ```
 
 Use explicit component file names instead of generic `index.tsx` files for pages and feature-level components.
@@ -85,7 +72,7 @@ Shared UI components stay in `src/components/ui`.
 Shared UI components may be imported from the `src/components/ui` barrel export:
 
 ```ts
-import { ModuleHeader, ModulePanel } from '~/components/ui';
+import { ModuleHeader, ModulePanel } from "~/components/ui";
 ```
 
 Components inside `src/components/ui` should import other UI components directly from their source file when needed, not from the barrel export.
@@ -159,7 +146,7 @@ Avoid unnecessary decorative text in analytical modules. Module titles, controls
 
 ## Current implementation notes
 
-The Current Election dashboard uses temporary chart placeholder images for modules that do not have data integration.
+The dashboard uses temporary chart placeholder images for modules that do not have data integration.
 
 Real charts should replace those placeholders when data and chart components are implemented.
 

@@ -1,4 +1,3 @@
-export { default as CandidateMultiSelect } from './CandidateMultiSelect';
 export { default as IntervalSelector } from './IntervalSelector';
 export { default as MetricCard } from './MetricCard';
 export { default as ModuleHeader } from './ModuleHeader';

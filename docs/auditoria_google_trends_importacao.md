@@ -30,9 +30,9 @@
   e não no frontend.
 
 | Métrica 2022 (Lula vs Bolsonaro) | Antes (`"Jair Bolsonaro"`) | Depois (`"Bolsonaro"`) |
-| --- | --- | --- |
-| Share Lula | ~92% | 44,5% |
-| Share Bolsonaro | ~8% | 55,5% |
+| -------------------------------- | -------------------------- | ---------------------- |
+| Share Lula                       | ~92%                       | 44,5%                  |
+| Share Bolsonaro                  | ~8%                        | 55,5%                  |
 
 ---
 
@@ -45,13 +45,13 @@ direto no Google Sheets**.
 
 **Pipeline de coleta (Python, `analise-eleicoes/scripts/`):**
 
-| Etapa | Arquivo | Função principal |
-| --- | --- | --- |
-| Configuração | `constants.py` | `GOOGLE_TRENDS_ELECTION_GROUPS` (termos, âncora, timeframe por ano) |
-| Coleta (extract) | `extractors/google_trends.py` | `build_trends_batches`, `fetch_interest_over_time_batch` (pytrends) |
-| Transformação | `transformers/google_trends.py` | `transform_batch_interest_over_time`, `rescale_batches_by_anchor` |
-| Carga (Sheets) | `loaders/google_trends.py` + `core/sheets.py` | `save_processed_*`, `write_dataframe_to_tab` (gspread) |
-| Orquestração | `pipelines/google_trends.py` | `run_google_trends_pipeline` |
+| Etapa            | Arquivo                                       | Função principal                                                    |
+| ---------------- | --------------------------------------------- | ------------------------------------------------------------------- |
+| Configuração     | `constants.py`                                | `GOOGLE_TRENDS_ELECTION_GROUPS` (termos, âncora, timeframe por ano) |
+| Coleta (extract) | `extractors/google_trends.py`                 | `build_trends_batches`, `fetch_interest_over_time_batch` (pytrends) |
+| Transformação    | `transformers/google_trends.py`               | `transform_batch_interest_over_time`, `rescale_batches_by_anchor`   |
+| Carga (Sheets)   | `loaders/google_trends.py` + `core/sheets.py` | `save_processed_*`, `write_dataframe_to_tab` (gspread)              |
+| Orquestração     | `pipelines/google_trends.py`                  | `run_google_trends_pipeline`                                        |
 
 **Abas geradas no Google Sheets:**
 
@@ -62,14 +62,14 @@ direto no Google Sheets**.
 
 **Frontend (React + Vite, `analise-eleicoes/frontend/src/`):**
 
-| Responsabilidade | Arquivo |
-| --- | --- |
-| Lê a aba do Sheets (gviz CSV público) | `services/sheets.ts` (`sheetCsvUrl`, `fetchSheetCsv`, `parseCsv`) |
-| Tipa/converte os dados | `services/googleTrends.ts` (`TRENDS_TAB`, `mapRow`) |
-| Cache | `hooks/useGoogleTrends.ts` (TanStack Query) |
-| Dash 1 — Atenção pública | `components/modules/PublicAttentionModule.tsx` + `charts/AttentionTimelineChart.tsx` |
-| Dash 3 — Share of Search | `components/modules/ShareOfSearchModule.tsx` + `charts/ShareOfSearchChart.tsx` |
-| Cálculos | `utils/trends.ts` (`filterByYear`, `meanInterest`, `shareOfSearch`, `detectPeaks`) |
+| Responsabilidade                      | Arquivo                                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Lê a aba do Sheets (gviz CSV público) | `services/sheets.ts` (`sheetCsvUrl`, `fetchSheetCsv`, `parseCsv`)                           |
+| Tipa/converte os dados                | `services/googleTrends.ts` (`TRENDS_TAB`, `mapRow`)                                         |
+| Cache                                 | `hooks/useGoogleTrends.ts` (TanStack Query)                                                 |
+| Dash 1 — Atenção pública              | `pages/Dashboard/PublicAttention/PublicAttention.tsx` + `charts/AttentionTimelineChart.tsx` |
+| Dash 3 — Share of Search              | `pages/Dashboard/ShareOfSearch/ShareOfSearch.tsx` + `charts/ShareOfSearchChart.tsx`         |
+| Cálculos                              | `utils/trends.ts` (`filterByYear`, `meanInterest`, `shareOfSearch`, `detectPeaks`)          |
 
 O frontend lê a aba via `https://docs.google.com/spreadsheets/d/{id}/gviz/tq?tqx=out:csv&sheet=...`
 (`VITE_GOOGLE_SHEETS_ID` em `frontend/.env`).
@@ -123,11 +123,11 @@ origem.
 
 `scripts/audit_outputs/anchor_usage_by_year.csv`:
 
-| Ano | Âncora configurada | Termos com `is_anchor=true` | Só a âncora certa marcada? | Batches da âncora no processado | Datas com âncora duplicada |
-| --- | --- | --- | --- | --- | --- |
-| 2018 | Bolsonaro | Bolsonaro | Sim | batch_01 | 0 |
-| 2022 | Lula | Lula | Sim | batch_01 | 0 |
-| current | Lula | Lula | Sim | batch_01 | 0 |
+| Ano     | Âncora configurada | Termos com `is_anchor=true` | Só a âncora certa marcada? | Batches da âncora no processado | Datas com âncora duplicada |
+| ------- | ------------------ | --------------------------- | -------------------------- | ------------------------------- | -------------------------- |
+| 2018    | Bolsonaro          | Bolsonaro                   | Sim                        | batch_01                        | 0                          |
+| 2022    | Lula               | Lula                        | Sim                        | batch_01                        | 0                          |
+| current | Lula               | Lula                        | Sim                        | batch_01                        | 0                          |
 
 - Apenas o termo-âncora correto está marcado como `is_anchor`.
 - No dataset processado, o âncora aparece **somente no `batch_01`** (uma vez por data).
@@ -182,7 +182,7 @@ processadas no total; a leitura de auditoria via gspread leu **1973 linhas** na 
 
 > Observação: o pipeline reescreve a janela completa a cada execução (o índice do
 > Google Trends é renormalizado por janela), então a sincronização é sempre um
-> *full refresh* — não incremental.
+> _full refresh_ — não incremental.
 
 ---
 
@@ -238,6 +238,7 @@ share(candidato) = média_interesse(candidato) / Σ médias dos candidatos selec
 - Não havia dupla contagem do âncora (dataset sem duplicatas).
 
 **Ajustes aplicados:**
+
 - Adicionada **alternância raw/scaled** (antes `METRIC` era fixo em `interestScaled`),
   permitindo o modo de auditoria por `interest_raw` para candidatos do mesmo batch.
 - `shareOfSearch` passa a **ignorar `is_partial`** no escopo do cálculo (afeta o ano
@@ -245,14 +246,14 @@ share(candidato) = média_interesse(candidato) / Σ médias dos candidatos selec
 
 **Comparação 2022 (Share of Search)** — `share_2022_atual_vs_deduplicado.csv`:
 
-| Termo | Share scaled (todos selecionados) | Share scaled (deduplicado) | Share raw |
-| --- | --- | --- | --- |
-| Bolsonaro | 52,76% | 52,76% | 52,55% |
-| Lula | 42,27% | 42,27% | 42,11% |
-| Simone Tebet | 1,89% | 1,89% | 1,89% |
-| Ciro Gomes | 1,58% | 1,58% | 1,57% |
-| Padre Kelmon | 0,98% | 0,98% | 1,26% |
-| demais | < 0,5% | — | — |
+| Termo        | Share scaled (todos selecionados) | Share scaled (deduplicado) | Share raw |
+| ------------ | --------------------------------- | -------------------------- | --------- |
+| Bolsonaro    | 52,76%                            | 52,76%                     | 52,55%    |
+| Lula         | 42,27%                            | 42,27%                     | 42,11%    |
+| Simone Tebet | 1,89%                             | 1,89%                      | 1,89%     |
+| Ciro Gomes   | 1,58%                             | 1,58%                      | 1,57%     |
+| Padre Kelmon | 0,98%                             | 0,98%                      | 1,26%     |
+| demais       | < 0,5%                            | —                          | —         |
 
 - **Atual == deduplicado** (não há duplicatas).
 - **Lula vs Bolsonaro apenas (par):** Lula 44,5% / Bolsonaro 55,5% (scaled == raw,
@@ -268,10 +269,10 @@ share(candidato) = média_interesse(candidato) / Σ médias dos candidatos selec
   busca `"Bolsonaro"`. Coleta isolada (`term_comparison_bolsonaro.csv`, ago–out/2022,
   mesma requisição):
 
-| Termo | Média | Pico |
-| --- | --- | --- |
-| Lula | 12,6 | 100 |
-| Bolsonaro | 15,11 | 97 |
+| Termo              | Média   | Pico  |
+| ------------------ | ------- | ----- |
+| Lula               | 12,6    | 100   |
+| Bolsonaro          | 15,11   | 97    |
 | **Jair Bolsonaro** | **0,9** | **9** |
 
 - `"Bolsonaro"` = **16,7×** `"Jair Bolsonaro"`. Esse é o gerador do "92/8".
@@ -357,15 +358,15 @@ Também alinhados: `docs/google_trends_candidatos.md`,
 
 ## 15. Critérios de aceite
 
-| Critério | Status |
-| --- | --- |
-| Relatório em `docs/auditoria_google_trends_importacao.md` | ✔ (este arquivo) |
-| Duplicatas por `election_year+date+term` identificadas/descartadas | ✔ descartadas (0) |
-| Confirmar se o âncora inflava o Share | ✔ não inflava (problema era o termo) |
-| Comparação do Share de 2022 antes × depois | ✔ 92/8 → 44,5/55,5 |
-| Verificação do cálculo no frontend | ✔ correto (média), com melhorias menores |
-| Verificação do que vai ao Google Sheets | ✔ 1973 linhas × 13 colunas, full refresh |
-| Recomendação raw vs scaled | ✔ scaled por padrão; raw para mesmo batch (toggle) |
-| Orientação "Lula" × "Bolsonaro" × "Jair Bolsonaro" | ✔ usar "Bolsonaro" |
-| Nenhum dado original sobrescrito sem backup | ✔ (dados regenerados; scripts read-only) |
-| Dashboard passa a usar dados corrigidos / justificativa | ✔ aba recoletada com termo correto |
+| Critério                                                           | Status                                             |
+| ------------------------------------------------------------------ | -------------------------------------------------- |
+| Relatório em `docs/auditoria_google_trends_importacao.md`          | ✔ (este arquivo)                                   |
+| Duplicatas por `election_year+date+term` identificadas/descartadas | ✔ descartadas (0)                                  |
+| Confirmar se o âncora inflava o Share                              | ✔ não inflava (problema era o termo)               |
+| Comparação do Share de 2022 antes × depois                         | ✔ 92/8 → 44,5/55,5                                 |
+| Verificação do cálculo no frontend                                 | ✔ correto (média), com melhorias menores           |
+| Verificação do que vai ao Google Sheets                            | ✔ 1973 linhas × 13 colunas, full refresh           |
+| Recomendação raw vs scaled                                         | ✔ scaled por padrão; raw para mesmo batch (toggle) |
+| Orientação "Lula" × "Bolsonaro" × "Jair Bolsonaro"                 | ✔ usar "Bolsonaro"                                 |
+| Nenhum dado original sobrescrito sem backup                        | ✔ (dados regenerados; scripts read-only)           |
+| Dashboard passa a usar dados corrigidos / justificativa            | ✔ aba recoletada com termo correto                 |

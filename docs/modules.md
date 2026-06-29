@@ -8,33 +8,18 @@ Frontend layout, visual hierarchy and implementation details are documented sepa
 
 ## Product structure
 
-The application is organized around two main analytical areas.
+The application is organized around one main analytical dashboard.
 
-### Current Election
+### Dashboard
 
-The Current Election area focuses on the ongoing presidential election.
+The dashboard brings together indicators related to public attention, market expectations and the relationship between both.
 
-It brings together indicators related to public attention, market expectations and the relationship between both.
-
-Modules in this area:
+Modules in this dashboard:
 
 - Market Expectations
 - Public Attention
 - Share of Search
 - Public Attention vs Market Expectations
-
-### Historical Elections
-
-The Historical Elections area focuses on past Brazilian presidential elections.
-
-It brings together official results, geographic distribution, comparisons between rounds and complementary indicators.
-
-Modules in this area:
-
-- Candidate Totals
-- Runoff Difference
-- Electoral Map
-- Complementary Indicators
 
 ## Contextual events
 
@@ -46,7 +31,7 @@ In the product interface, contextual events are represented as supporting inform
 
 They are not treated as a standalone visual module in the product structure.
 
-## Current Election modules
+## Dashboard modules
 
 ### Market Expectations
 
@@ -117,8 +102,6 @@ Related sources:
 
 - Google Trends
 - Polymarket
-
-## Historical Elections modules
 
 ### Candidate Totals
 

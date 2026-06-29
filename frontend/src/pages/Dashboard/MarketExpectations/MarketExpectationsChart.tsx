@@ -1,9 +1,26 @@
-import { Brush, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Brush,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  type TooltipContentProps,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
+import ChartTooltip from '~/components/charts/ChartTooltip';
+import { EventDetails } from '~/components/charts/EventMarker';
+import type { ElectionEvent } from '~/data/electionEvents';
 import type { MarketExpectationInterval, MarketExpectationSeries } from '~/models/marketExpectations';
-import { formatDateTime, formatProbability } from '~/utils/format';
+import { EVENT_FLAG_COLOR, EVENT_LINE_COLOR, groupEventsByNearestTs } from '~/utils/events';
+import { formatProbability } from '~/utils/format';
 
 type MarketExpectationsChartProps = {
+  events: ElectionEvent[];
   interval: MarketExpectationInterval;
   series: MarketExpectationSeries[];
 };
@@ -21,13 +38,65 @@ const CHART_COLORS = [
   'var(--color-chart-6)',
 ];
 
-export default function MarketExpectationsChart({ interval, series }: MarketExpectationsChartProps) {
+const TOOLTIP_DATE_FORMATTER = new Intl.DateTimeFormat('pt-BR', {
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+});
+
+export default function MarketExpectationsChart({ events, interval, series }: MarketExpectationsChartProps) {
   const lines = series.map((candidateSeries, index) => ({
     color: CHART_COLORS[index % CHART_COLORS.length],
     key: getSeriesKey(candidateSeries),
     name: candidateSeries.displayName,
   }));
   const data = buildChartData(series, interval);
+  const eventMarkers = getEventsInDataRange(events, data);
+  const eventsByTimestamp = groupEventsByNearestTs(
+    eventMarkers,
+    data.map((point) => point.timestampMs),
+  );
+
+  function renderTooltip({ active, payload, label }: TooltipContentProps) {
+    if (!active || !payload || payload.length === 0) {
+      return null;
+    }
+
+    const entries = payload
+      .filter((entry) => entry.value != null && entry.name != null)
+      .map((entry) => ({
+        color: entry.color,
+        name: String(entry.name),
+        value: Number(entry.value),
+      }))
+      .sort((firstEntry, secondEntry) => secondEntry.value - firstEntry.value);
+    const timestamp = typeof label === 'number' ? label : Number(label);
+    const eventsHere = Number.isFinite(timestamp) ? (eventsByTimestamp.get(timestamp) ?? []) : [];
+
+    return (
+      <ChartTooltip title={Number.isFinite(timestamp) ? formatTooltipDate(timestamp) : undefined}>
+        <div className="flex flex-col gap-0.5">
+          {entries.map((entry) => (
+            <div className="flex items-center justify-between gap-4" key={entry.name}>
+              <span style={{ color: entry.color }}>{entry.name}</span>
+
+              <span className="tabular-nums">{formatProbability(entry.value)}</span>
+            </div>
+          ))}
+        </div>
+
+        {eventsHere.length > 0 ? (
+          <div className="border-border mt-1 border-t pt-1">
+            <div className="text-muted">Evento:</div>
+
+            <EventDetails events={eventsHere} />
+          </div>
+        ) : null}
+      </ChartTooltip>
+    );
+  }
 
   return (
     <div className="h-72 min-w-0 sm:h-96">
@@ -56,13 +125,19 @@ export default function MarketExpectationsChart({ interval, series }: MarketExpe
             width={52}
           />
 
-          <Tooltip
-            formatter={(value, name) => [formatProbability(Number(value)), name]}
-            labelFormatter={(label) => formatDateTimeFromTimestamp(Number(label))}
-            wrapperStyle={{ zIndex: 50 }}
-          />
+          <Tooltip content={renderTooltip} wrapperStyle={{ zIndex: 50 }} />
 
           <Legend iconSize={8} wrapperStyle={{ fontSize: 12, lineHeight: '16px' }} />
+
+          {eventMarkers.map((event) => (
+            <ReferenceLine
+              key={`${event.date}-${event.title}`}
+              label={{ fill: EVENT_FLAG_COLOR, fontSize: 10, position: 'top', value: '▾' }}
+              stroke={EVENT_LINE_COLOR}
+              strokeDasharray="3 4"
+              x={Date.parse(event.date)}
+            />
+          ))}
 
           {lines.map((line) => (
             <Line
@@ -107,8 +182,19 @@ function buildChartData(series: MarketExpectationSeries[], interval: MarketExpec
   );
 }
 
-function formatDateTimeFromTimestamp(value: number) {
-  return formatDateTime(new Date(value).toISOString());
+function getEventsInDataRange(events: ElectionEvent[], data: ChartRow[]) {
+  const firstTimestamp = data[0]?.timestampMs;
+  const lastTimestamp = data.at(-1)?.timestampMs;
+
+  if (firstTimestamp == null || lastTimestamp == null) {
+    return [];
+  }
+
+  return events.filter((event) => {
+    const timestamp = Date.parse(event.date);
+
+    return timestamp >= firstTimestamp && timestamp <= lastTimestamp;
+  });
 }
 
 function formatCompactDateTimeFromTimestamp(value: number) {
@@ -117,6 +203,10 @@ function formatCompactDateTimeFromTimestamp(value: number) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
 
   return `${day}/${month}`;
+}
+
+function formatTooltipDate(value: number) {
+  return TOOLTIP_DATE_FORMATTER.format(new Date(value));
 }
 
 function getBucketTimestamp(value: string, interval: MarketExpectationInterval) {
