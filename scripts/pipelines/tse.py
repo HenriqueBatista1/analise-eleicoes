@@ -1,5 +1,6 @@
 from extractors.tse import extract_presidency_data, extract_voter_profile_data
-from loaders.tse import run_tse_load
+from loaders.tse_sheets import run_tse_load_to_sheets
+from scripts.loaders.tse import run_tse_load
 from transformers.tse import (
     run_presidency_transformation,
     run_voter_profile_transformation,
@@ -47,7 +48,10 @@ def run_tse_pipeline() -> int:
     print("Transformation completed successfully.")
 
     print("\n--- Phase 3: Load ---")
-    load_success = run_tse_load()
+    # load_sucess = run_tse_load()
+
+    # lógica para carregar os dados transformados para o Google Sheets
+    load_success = run_tse_load_to_sheets()
     if not load_success:
         print("Warning: TSE load stage failed.")
         return total_extracted
