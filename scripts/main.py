@@ -36,15 +36,6 @@ def main() -> int:
         session.rollback()
         print(f"Polymarket pipeline failure: {exc}")
         return 1
-    
-
-    try:
-        print("\n--- Running TSE Pipeline ---")
-        run_tse_pipeline()
-    except Exception as exc:
-        session.rollback()
-        print(f"TSE pipeline failure: {exc}")
-        return 1
 
     finally:
         session.close()
