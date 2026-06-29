@@ -1,9 +1,23 @@
-import { Brush, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Brush,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
+import type { ElectionEvent } from '~/data/electionEvents';
 import type { MarketExpectationInterval, MarketExpectationSeries } from '~/models/marketExpectations';
+import { EVENT_FLAG_COLOR, EVENT_LINE_COLOR } from '~/utils/events';
 import { formatDateTime, formatProbability } from '~/utils/format';
 
 type MarketExpectationsChartProps = {
+  events: ElectionEvent[];
   interval: MarketExpectationInterval;
   series: MarketExpectationSeries[];
 };
@@ -21,13 +35,14 @@ const CHART_COLORS = [
   'var(--color-chart-6)',
 ];
 
-export default function MarketExpectationsChart({ interval, series }: MarketExpectationsChartProps) {
+export default function MarketExpectationsChart({ events, interval, series }: MarketExpectationsChartProps) {
   const lines = series.map((candidateSeries, index) => ({
     color: CHART_COLORS[index % CHART_COLORS.length],
     key: getSeriesKey(candidateSeries),
     name: candidateSeries.displayName,
   }));
   const data = buildChartData(series, interval);
+  const eventMarkers = getEventsInDataRange(events, data);
 
   return (
     <div className="h-72 min-w-0 sm:h-96">
@@ -63,6 +78,16 @@ export default function MarketExpectationsChart({ interval, series }: MarketExpe
           />
 
           <Legend iconSize={8} wrapperStyle={{ fontSize: 12, lineHeight: '16px' }} />
+
+          {eventMarkers.map((event) => (
+            <ReferenceLine
+              key={`${event.date}-${event.title}`}
+              label={{ fill: EVENT_FLAG_COLOR, fontSize: 10, position: 'top', value: '▾' }}
+              stroke={EVENT_LINE_COLOR}
+              strokeDasharray="3 4"
+              x={Date.parse(event.date)}
+            />
+          ))}
 
           {lines.map((line) => (
             <Line
@@ -105,6 +130,21 @@ function buildChartData(series: MarketExpectationSeries[], interval: MarketExpec
   return Array.from(rowsByTimestamp.values()).toSorted(
     (firstRow, secondRow) => firstRow.timestampMs - secondRow.timestampMs,
   );
+}
+
+function getEventsInDataRange(events: ElectionEvent[], data: ChartRow[]) {
+  const firstTimestamp = data[0]?.timestampMs;
+  const lastTimestamp = data.at(-1)?.timestampMs;
+
+  if (firstTimestamp == null || lastTimestamp == null) {
+    return [];
+  }
+
+  return events.filter((event) => {
+    const timestamp = Date.parse(event.date);
+
+    return timestamp >= firstTimestamp && timestamp <= lastTimestamp;
+  });
 }
 
 function formatDateTimeFromTimestamp(value: number) {

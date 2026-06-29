@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { IntervalSelector, MetricCard, ModuleHeader, ModulePanel, MultiSelect, SourceBadge } from '~/components/ui';
+import { ELECTION_EVENTS } from '~/data/electionEvents';
 import { useMarketExpectationOptions } from '~/fetchers/hooks/useMarketExpectationOptions';
 import { useMarketExpectations } from '~/fetchers/hooks/useMarketExpectations';
 import type { MarketExpectationInterval } from '~/models/marketExpectations';
@@ -12,6 +13,14 @@ const DEFAULT_INTERVALS: MarketExpectationInterval[] = ['1h', '4h', '1d', '1w'];
 const INTERVAL_LABELS: Partial<Record<MarketExpectationInterval, string>> = {
   '1w': '1 sem.',
 };
+
+const CURRENT_ELECTION_EVENTS = ELECTION_EVENTS.filter((event) => event.electionYear === 'current').toSorted((a, b) =>
+  a.date.localeCompare(b.date),
+);
+
+const CURRENT_ELECTION_EVENT_DATE_FORMATTER = new Intl.DateTimeFormat('pt-BR', {
+  timeZone: 'UTC',
+});
 
 export default function MarketExpectations() {
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>();
@@ -67,6 +76,11 @@ export default function MarketExpectations() {
       : largestChange && largestChange.value < 0
         ? 'negative'
         : 'default';
+  const latestEvent = CURRENT_ELECTION_EVENTS.at(-1);
+  const latestEventTitle = latestEvent?.title ?? EMPTY_VALUE;
+  const latestEventDetails = latestEvent
+    ? `${CURRENT_ELECTION_EVENT_DATE_FORMATTER.format(new Date(latestEvent.date))} · ${latestEvent.type}`
+    : undefined;
 
   const chartFeedback = hasError
     ? 'Não foi possível carregar os dados de expectativa de mercado.'
@@ -105,7 +119,7 @@ export default function MarketExpectations() {
               {chartFeedback}
             </div>
           ) : (
-            <MarketExpectationsChart interval={selectedInterval} series={series} />
+            <MarketExpectationsChart events={CURRENT_ELECTION_EVENTS} interval={selectedInterval} series={series} />
           )}
 
           <div className="gap-3 grid sm:grid-cols-2 xl:grid-cols-4">
@@ -120,7 +134,7 @@ export default function MarketExpectations() {
               variant={largestChangeVariant}
             />
 
-            <MetricCard text="Implementação futura" title="Evento recente" />
+            <MetricCard text={latestEventTitle} title="Evento recente" value={latestEventDetails} />
           </div>
         </div>
       </div>
